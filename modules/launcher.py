@@ -13,6 +13,9 @@ from fabric.utils import get_relative_path
 from gi.repository import GLib
 import modules.icons as icons
 
+from rapidfuzz import fuzz
+import json
+
 class AppLauncher(Box):
     def __init__(self, monitor_id, **kwargs):
         super().__init__(
@@ -61,8 +64,6 @@ class AppLauncher(Box):
             ],
         )
 
-        # self.resize_viewport()
-
         self.add(self.launcher_box)
         self.show_all()
 
@@ -84,21 +85,8 @@ class AppLauncher(Box):
         remove_handler(self._arranger_handler) if self._arranger_handler else None
         self.viewport.children = []
 
-        filtered_apps_iter = iter(
-            sorted(
-                [
-                    app
-                    for app in self._all_apps
-                    if query.casefold()
-                    in (
-                        (app.display_name or "")
-                        + (" " + app.name + " ")
-                        + (app.generic_name or "")
-                    ).casefold()
-                ],
-                key=lambda app: (app.display_name or "").casefold(),
-            )
-        )
+        filtered_apps_iter = self.sort_applications(query)
+
         should_resize = operator.length_hint(filtered_apps_iter) == len(self._all_apps)
 
         self._arranger_handler = idle_add(
@@ -113,15 +101,6 @@ class AppLauncher(Box):
 
         self.viewport.add(self.bake_application_slot(app))
         return True
-
-    def resize_viewport(self):
-        # self.scrolled_window.set_max_content_width(
-            # self.viewport.get_allocation().width  # type: ignore
-        # )
-        # self.scrolled_window.set_min_content_width(
-            # self.viewport.get_allocation().width  # type: ignore
-        # )
-        return False
 
     def bake_application_slot(self, app: DesktopApp, **kwargs) -> Button:
         return Button(
@@ -150,3 +129,20 @@ class AppLauncher(Box):
         if text == ":wp":
             GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.open_notch(\"wallpapers\")'")
 
+    def sort_applications(self, query):
+        with open("./data.json", "r+") as file:
+            data = json.load(file)
+            if "excluded_applications" not in data:
+                data["excluded_applications"] = []
+            file.seek(0)
+            json.dump(data, file, indent=2)
+            file.truncate()
+        pairs = []
+        for app in self._all_apps:
+            if app.display_name in data["excluded_applications"]:
+                continue
+            pairs.append([fuzz.WRatio(query, app.display_name.casefold()), app])
+
+        result = sorted(pairs, key=lambda pair: pair[0], reverse=True)
+        result = [r[1] for r in result]
+        return iter(result)
