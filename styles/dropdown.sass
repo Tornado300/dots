@@ -1,0 +1,45 @@
+.dropdown {
+    background-color: @transparent;
+    min-height: 0px;
+    border-color: #ffffff;
+    border-radius: 0px;
+    transition: all 0.5s cubic-bezier(0.5, 0.25, 0, 1.25);
+
+}
+
+.dropdown #current-selection.opened {
+    margin: 0px;
+}
+
+.dropdown #scrolled-window.opened {
+    margin: 0px;
+}
+
+.dropdown #current-selection.closed {
+    min-height: 0px;
+    margin: -800px;
+
+}
+
+.dropdown #scrolled-window.closed {
+    min-height: 0px;
+    margin: -800px;
+
+}
+
+
+.dropdown #element-list #element {
+    border-radius: 7px;
+    padding: 5px;
+    margin: 4px;
+    box-shadow: 1px 1px #333333;
+    background-color: #222222;
+}
+
+.dropdown #current-selection {
+    border-radius: 7px;
+    padding: 5px;
+    margin: 4px;
+    box-shadow: 1px 1px #333333;
+    background-color: #222222;
+}

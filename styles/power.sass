@@ -1,0 +1,38 @@
+.power-menu-button {
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.power-menu-button label {
+  font-size: 24px;
+  color: @light_text;
+}
+
+.power-menu-button:hover,
+.power-menu-button:focus {
+  background-color: @highlight;
+}
+
+.power-menu-button:active {
+  background-color: var(--primary);
+}
+
+.power-menu-button:active label {
+  color: var(--shadow);
+}
+
+#power-menu {
+  background-color: @dark_background;
+}
+
+#power-menu-button-shutdown label {
+  color: @power_menu_button_shutdown;
+}
+
+#power-menu-button-reboot label {
+  color: @power_menu_button_reboot;
+}
+
+#power-menu-button-logout label {
+  color: @power_menu_button_logout;
+}
