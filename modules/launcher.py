@@ -10,7 +10,7 @@ from fabric.widgets.scrolledwindow import ScrolledWindow
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import DesktopApp, get_desktop_applications, idle_add, remove_handler
 from fabric.utils import get_relative_path
-from gi.repository import GLib
+from gi.repository import GLib, Gtk
 import modules.icons as icons
 
 from rapidfuzz import fuzz
@@ -76,14 +76,32 @@ class AppLauncher(Box):
         # Vuelve a cargar la lista de aplicaciones
         self._all_apps = get_desktop_applications()
         self.arrange_viewport()
+        # self.viewport.children[0].grab_focus()
 
     def on_key_press_event(self, widget, event):
         if event.keyval == 65307:  # Escape key
             self.close_launcher()
+        if event.keyval == 65293 and self.search_entry.is_focus() and ":" is not self.search_entry.get_text()[0]: # enter key
+            self.viewport.children[self.selected_application].grab_focus()
+        if event.keyval == 106 and event.state == 4: # ctrl + j key
+            self.selected_application = (self.selected_application + 1) % len(self.viewport.children)
+            self.viewport.children[0].get_style_context().set_state(Gtk.StateFlags.NORMAL)
+            self.viewport.children[self.selected_application].grab_focus()
+        if event.keyval == 107 and event.state == 4: # ctrl + k key
+            self.selected_application = (self.selected_application - 1) % len(self.viewport.children)
+            self.viewport.children[0].get_style_context().set_state(Gtk.StateFlags.NORMAL)
+            self.viewport.children[self.selected_application].grab_focus()
+        if event.keyval == 108 and event.state == 4: # ctrl + l key
+            self.search_entry.grab_focus()
+            self.viewport.children[0].get_style_context().set_state(Gtk.StateFlags.FOCUSED)
+        return True
+
+
 
     def arrange_viewport(self, query: str = ""):
         remove_handler(self._arranger_handler) if self._arranger_handler else None
         self.viewport.children = []
+        self.selected_application = 0
 
         filtered_apps_iter = self.sort_applications(query)
 
@@ -98,8 +116,8 @@ class AppLauncher(Box):
     def add_next_application(self, apps_iter: Iterator[DesktopApp]):
         if not (app := next(apps_iter, None)):
             return False
-
         self.viewport.add(self.bake_application_slot(app))
+        self.viewport.children[0].get_style_context().set_state(Gtk.StateFlags.FOCUSED)
         return True
 
     def bake_application_slot(self, app: DesktopApp, **kwargs) -> Button:

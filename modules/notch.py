@@ -134,12 +134,17 @@ class Notch(Window):
         self.connect("key-press-event", self.on_key_press)
 
     def on_key_press(self, widget, event):
-        # Verifica si la tecla presionada es Escape
         print(event.keyval)
-        if event.keyval == 65307:  # Código de la tecla Escape
+        match self.open_widget:
+            case "launcher":
+                close = self.launcher.on_key_press_event(widget, event)
+            case "wallpapers":
+                close = self.wallpapers.on_key_press_event(widget, event)
+            case "dashboard":
+                close = self.dashboard.on_key_press_event(widget, event)
+
+        if close and event.keyval == 65307:
             self.close_notch()
-            return True  # Previene que otros manejadores procesen el evento
-        return False
 
     def on_button_enter(self, widget, event):
         window = widget.get_window()
@@ -153,6 +158,7 @@ class Notch(Window):
 
     def close_notch(self):
         self.set_keyboard_mode("none")
+        self.open_widget = None
 
         if self.hidden:
             self.notch_box.remove_style_class("hideshow")
@@ -188,6 +194,7 @@ class Notch(Window):
 
     def open_notch(self, widget: str):
         self.set_keyboard_mode("exclusive")
+        self.open_widget = widget
 
         if self.hidden:
             self.notch_box.remove_style_class("hidden")
@@ -226,6 +233,9 @@ class Notch(Window):
             self.stack.add_style_class(widget)
             self.stack.set_visible_child(widgets[widget])
             widgets[widget].add_style_class("open")
+
+            if widget == "power":
+                self.power.btn_shutdown.grab_focus()
 
             if widget == "dashboard":
                 widgets[widget].widgets.audio.update_slider()

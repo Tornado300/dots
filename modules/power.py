@@ -65,7 +65,6 @@ class PowerMenu(Box):
 
         for button in self.buttons:
             self.add(button)
-
         self.show_all()
 
     def close_menu(self):

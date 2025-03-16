@@ -116,8 +116,10 @@ class Dashboard(Box):
         )
 
         self.widgets = Widgets()
-
         self.calendar = Calendar()
+
+        self.selected_section = None
+        self.element_counter = 0
 
         self.stack = Stack(
             name="stack",
@@ -145,18 +147,47 @@ class Dashboard(Box):
 
         self.show_all()
 
-    def go_to_next_child(self):
-        children = self.stack.get_children()
-        current_index = self.get_current_index(children)
-        next_index = (current_index + 1) % len(children)
-        self.stack.set_visible_child(children[next_index])
+    def on_key_press_event(self, widget, event):
+        match self.selected_section:
+            case None:
+                match event.keyval:
+                    case 97:
+                        self.selected_section = "audio"
+                    case 119:
+                        self.selected_section = "wlan"
+                        print("wlan")
+                    case 95:
+                        self.selected_section = "bluetooth"
+                        print("bluetooth")
+            case "audio" | "audio-output" | "audio-input":
+                match event.keyval:
+                    case 111:
+                        self.selected_section = "audio-output"
+                        self.element_counter = 0
+                        self.widgets.audio.output_dropdown.open()
+                        self.widgets.audio.input_dropdown.close()
+                    case 105:
+                        self.selected_section = "audio-input"
+                        self.element_counter = 0
+                        self.widgets.audio.input_dropdown.open()
+                        self.widgets.audio.output_dropdown.close()
+                    case 106:
+                        length = len(self.widgets.audio.output_dropdown.element_list.children)
+                        self.element_counter = (self.element_counter + 1) % length
+                    case 107:
+                        length = len(self.widgets.audio.output_dropdown.element_list.children)
+                        self.element_counter = (self.element_counter - 1) % length
 
-    def go_to_previous_child(self):
-        children = self.stack.get_children()
-        current_index = self.get_current_index(children)
-        previous_index = (current_index - 1 + len(children)) % len(children)
-        self.stack.set_visible_child(children[previous_index])
-
-    def get_current_index(self, children):
-        current_child = self.stack.get_visible_child()
-        return children.index(current_child) if current_child in children else -1
+                if self.selected_section == "audio-output":
+                    self.widgets.audio.output_dropdown.element_list.children[self.element_counter].grab_focus()
+                elif self.selected_section == "audio-input":
+                    self.widgets.audio.input_dropdown.element_list.children[self.element_counter].grab_focus()
+        if event.keyval == 65307:
+            if "-" in self.selected_section:
+                self.selected_section = self.selected_section.split("-")[0]
+                self.widgets.audio.input_dropdown.close()
+                self.widgets.audio.output_dropdown.close()
+                return False
+            else:
+                self.selected_section = None
+                return True
