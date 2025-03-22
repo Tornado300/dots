@@ -148,24 +148,50 @@ class Dashboard(Box):
         self.show_all()
 
     def on_key_press_event(self, widget, event):
+        keyval = event.keyval
+
+        # Handle escape key (universal navigation control)
+        if keyval == 65307:  # ESC key
+            if "-" in str(self.selected_section):
+                # Move up one level from subsection to section
+                self.selected_section = self.selected_section.split("-")[0]
+
+                # Reset specific section UI
+                if self.selected_section == "audio":
+                    self.widgets.audio.vertical_split.children[0].remove_style_class("selected")
+                    self.widgets.audio.vertical_split.children[1].remove_style_class("selected")
+                    self.widgets.audio.add_style_class("selected")
+                    self.widgets.audio.input_dropdown.close()
+                    self.widgets.audio.output_dropdown.close()
+
+                return False
+            else:
+                # Exit from section selection entirely
+                self.selected_section = None
+                return True
+
+        # Main navigation based on selected section
         match self.selected_section:
             case None:
-                match event.keyval:
-                    case 97:
+                # No section selected - handle main navigation
+                match keyval:
+                    case 97:  # 'a' key for audio
                         self.selected_section = "audio"
                         self.widgets.audio.add_style_class("selected")
                         self.widgets.wifi.remove_style_class("selected")
                         self.widgets.bluetooth.remove_style_class("selected")
                         self.widgets.quickbuttons.remove_style_class("selected")
-                    case 119:
+                    case 119:  # 'w' key for wlan
                         self.selected_section = "wlan"
                         print("wlan")
-                    case 95:
+                    case 95:  # '_' key for bluetooth
                         self.selected_section = "bluetooth"
                         print("bluetooth")
+
             case "audio" | "audio-output" | "audio-input":
-                match event.keyval:
-                    case 111:
+                # Audio section and subsections navigation
+                match keyval:
+                    case 111:  # 'o' key - select audio output
                         self.selected_section = "audio-output"
                         self.widgets.audio.remove_style_class("selected")
                         self.widgets.audio.vertical_split.children[1].add_style_class("selected")
@@ -173,7 +199,7 @@ class Dashboard(Box):
                         self.element_counter = 0
                         self.widgets.audio.output_dropdown.open()
                         self.widgets.audio.input_dropdown.close()
-                    case 105:
+                    case 105:  # 'i' key - select audio input
                         self.selected_section = "audio-input"
                         self.widgets.audio.remove_style_class("selected")
                         self.widgets.audio.vertical_split.children[0].add_style_class("selected")
@@ -181,31 +207,29 @@ class Dashboard(Box):
                         self.element_counter = 0
                         self.widgets.audio.input_dropdown.open()
                         self.widgets.audio.output_dropdown.close()
-                    case 106:
-                        length = len(self.widgets.audio.output_dropdown.element_list.children)
-                        self.element_counter = (self.element_counter + 1) % length
-                    case 107:
-                        length = len(self.widgets.audio.output_dropdown.element_list.children)
-                        self.element_counter = (self.element_counter - 1) % length
+                    case 106:  # 'j' key - navigate down in list
+                        if self.selected_section in ["audio-output", "audio-input"]:
+                            # Determine which dropdown is active
+                            active_dropdown = (self.widgets.audio.output_dropdown 
+                                              if self.selected_section == "audio-output" 
+                                              else self.widgets.audio.input_dropdown)
+                            length = len(active_dropdown.element_list.children)
+                            self.element_counter = (self.element_counter + 1) % length
+                    case 107:  # 'k' key - navigate up in list
+                        if self.selected_section in ["audio-output", "audio-input"]:
+                            # Determine which dropdown is active
+                            active_dropdown = (self.widgets.audio.output_dropdown 
+                                              if self.selected_section == "audio-output" 
+                                              else self.widgets.audio.input_dropdown)
+                            length = len(active_dropdown.element_list.children)
+                            self.element_counter = (self.element_counter - 1) % length
 
+                # Focus the correct element based on current selection
                 if self.selected_section == "audio-output":
                     self.widgets.audio.output_dropdown.element_list.children[self.element_counter].grab_focus()
                 elif self.selected_section == "audio-input":
                     self.widgets.audio.input_dropdown.element_list.children[self.element_counter].grab_focus()
-        if event.keyval == 65307:
-            if "-" in str(self.selected_section):
-                self.selected_section = self.selected_section.split("-")[0]
-                match self.selected_section:
-                    case "audio":
-                        self.widgets.audio.vertical_split.children[0].remove_style_class("selected")
-                        self.widgets.audio.vertical_split.children[1].remove_style_class("selected")
-                        self.widgets.audio.add_style_class("selected")
-                self.widgets.audio.input_dropdown.close()
-                self.widgets.audio.output_dropdown.close()
-                return False
-            else:
-                self.selected_section = None
-                return True
+        return False
 
     def on_close(self):
         self.widgets.audio.input_dropdown.close()
