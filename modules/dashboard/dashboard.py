@@ -223,6 +223,18 @@ class Dashboard(Box):
                                               else self.widgets.audio.input_dropdown)
                             length = len(active_dropdown.element_list.children)
                             self.element_counter = (self.element_counter - 1) % length
+                    
+                if self.selected_section == "audio-input":
+                    if keyval == 104:
+                        self.widgets.audio.input_slider.value -= 5
+                    elif keyval == 108:
+                        self.widgets.audio.input_slider.value += 5
+
+                elif self.selected_section == "audio-output":
+                    if keyval == 104:
+                        self.widgets.audio.output_slider.value -= 5
+                    elif keyval == 108:
+                        self.widgets.audio.output_slider.value += 5
 
                 # Focus the correct element based on current selection
                 if self.selected_section == "audio-output":
