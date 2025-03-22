@@ -153,6 +153,10 @@ class Dashboard(Box):
                 match event.keyval:
                     case 97:
                         self.selected_section = "audio"
+                        self.widgets.audio.add_style_class("selected")
+                        self.widgets.wifi.remove_style_class("selected")
+                        self.widgets.bluetooth.remove_style_class("selected")
+                        self.widgets.quickbuttons.remove_style_class("selected")
                     case 119:
                         self.selected_section = "wlan"
                         print("wlan")
@@ -163,11 +167,17 @@ class Dashboard(Box):
                 match event.keyval:
                     case 111:
                         self.selected_section = "audio-output"
+                        self.widgets.audio.remove_style_class("selected")
+                        self.widgets.audio.vertical_split.children[1].add_style_class("selected")
+                        self.widgets.audio.vertical_split.children[0].remove_style_class("selected")
                         self.element_counter = 0
                         self.widgets.audio.output_dropdown.open()
                         self.widgets.audio.input_dropdown.close()
                     case 105:
                         self.selected_section = "audio-input"
+                        self.widgets.audio.remove_style_class("selected")
+                        self.widgets.audio.vertical_split.children[0].add_style_class("selected")
+                        self.widgets.audio.vertical_split.children[1].remove_style_class("selected")
                         self.element_counter = 0
                         self.widgets.audio.input_dropdown.open()
                         self.widgets.audio.output_dropdown.close()
@@ -183,11 +193,19 @@ class Dashboard(Box):
                 elif self.selected_section == "audio-input":
                     self.widgets.audio.input_dropdown.element_list.children[self.element_counter].grab_focus()
         if event.keyval == 65307:
-            if "-" in self.selected_section:
+            if "-" in str(self.selected_section):
                 self.selected_section = self.selected_section.split("-")[0]
+                match self.selected_section:
+                    case "audio":
+                        self.widgets.audio.vertical_split.children[0].remove_style_class("selected")
+                        self.widgets.audio.vertical_split.children[1].remove_style_class("selected")
+                        self.widgets.audio.add_style_class("selected")
                 self.widgets.audio.input_dropdown.close()
                 self.widgets.audio.output_dropdown.close()
                 return False
             else:
+                self.widgets.audio.remove_style_class("selected")
+                self.widgets.audio.vertical_split.children[0].remove_style_class("selected")
+                self.widgets.audio.vertical_split.children[1].remove_style_class("selected")
                 self.selected_section = None
                 return True
