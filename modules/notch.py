@@ -173,14 +173,11 @@ class Notch(Window):
 
         for widget in [self.launcher, self.dashboard, self.wallpapers, self.notification, self.power, self.compact]:
             widget.remove_style_class("open")
-            if widget == self.wallpapers:
-                self.wallpapers.viewport.hide()
-                self.wallpapers.viewport.set_property("name", None)
-            if widget == self.dashboard:
-                self.dashboard.widgets.audio.input_dropdown.close()
-                self.dashboard.widgets.audio.output_dropdown.close()
         for style in ["launcher", "dashboard", "wallpapers", "notification", "power", "compact"]:
             self.stack.remove_style_class(style)
+
+        self.wallpapers.on_close()
+        self.dashboard.on_close()
 
         self.compact.remove_style_class("hidden")
         self.stack.set_visible_child(self.compact)

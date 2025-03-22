@@ -204,8 +204,13 @@ class Dashboard(Box):
                 self.widgets.audio.output_dropdown.close()
                 return False
             else:
-                self.widgets.audio.remove_style_class("selected")
-                self.widgets.audio.vertical_split.children[0].remove_style_class("selected")
-                self.widgets.audio.vertical_split.children[1].remove_style_class("selected")
                 self.selected_section = None
                 return True
+
+    def on_close(self):
+        self.widgets.audio.input_dropdown.close()
+        self.widgets.audio.output_dropdown.close()
+        self.widgets.audio.remove_style_class("selected")
+        self.widgets.audio.vertical_split.children[0].remove_style_class("selected")
+        self.widgets.audio.vertical_split.children[1].remove_style_class("selected")
+        self.selected_section = None
