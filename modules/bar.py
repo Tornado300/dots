@@ -13,8 +13,9 @@ from modules.notch import Notch
 import modules.icons as icons
 # from dashboard import Dashboard
 from modules.corners import RoundedAngleEnd
+from fabric.hyprland import Hyprland
 
-
+import json
 
 
 
@@ -35,6 +36,13 @@ class Bar(Window):
             orientation="h",
             spacing=7
         )
+
+        # activate the open workspace on startup
+        monitor_raw = json.loads(Hyprland.send_command("j/monitors").reply.decode("utf-8"))
+        monitor_data = {}
+        for id, monitor in enumerate(monitor_raw):
+            monitor_data[id] = monitor
+        self.workspace_container.activate_workspace(monitor_data[self.monitor_id]["activeWorkspace"]["id"])
 
 
         self.systray = SystemTray(server)

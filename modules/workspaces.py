@@ -43,3 +43,7 @@ class Workspaces(OWorkspaces):
         if btn in self._container.children:
             return
         return self.insert_button(btn)
+
+    def activate_workspace(self, id):
+        self.lookup_or_bake_button(id).active = True
+        self._active_workspace = id
