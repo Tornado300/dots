@@ -26,14 +26,14 @@ class Controller(Window, Hyprland):
         self.data = json.load(open("./data.json", "r"))
 
         if id > 10 and id < 21:
-            if self.data["notch_status"] != module:
+            if self.data["notch_status" + str(0)] != module:
                 GLib.spawn_command_line_async(f'fabric-cli exec main-ui "notch0.close_notch()"')
                 GLib.spawn_command_line_async(f'fabric-cli exec main-ui "notch0.open_notch(\\\"{module}\\\")"')
             else:
                 GLib.spawn_command_line_async(f'fabric-cli exec main-ui "notch0.close_notch()"')
 
         elif id > 0 and id < 11:
-            if self.data["notch_status"] != module:
+            if self.data["notch_status" + str(1)] != module:
                 GLib.spawn_command_line_async(f'fabric-cli exec main-ui "notch1.close_notch()"')
                 GLib.spawn_command_line_async(f'fabric-cli exec main-ui "notch1.open_notch(\\\"{module}\\\")"')
             else:

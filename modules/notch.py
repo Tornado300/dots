@@ -29,14 +29,17 @@ class Notch(Window):
             visible=True,
             all_visible=True,
         )
+        self.monitor_id = monitor_id
 
         with open("./data.json", "r+") as file:
             self.data = json.load(file)
-            self.data["notch_status"] = "closed"
+            self.data["notch_status" + str(self.monitor_id)] = "closed"
             file.seek(0)
             json.dump(self.data, file, indent=2)
             file.truncate()
 
+        
+        self.open_widget = None
 
         self.corners = {
             "compact": {
@@ -86,6 +89,7 @@ class Notch(Window):
         self.launcher = AppLauncher(monitor_id)
         self.wallpapers = WallpaperSelector(self.data["wallpapers_dir"])
         self.notification = NotificationContainer(server=server, monitor_id=monitor_id)
+        self.floating_notification = NotificationContainer(server=server, monitor_id=monitor_id, h_expand=False)
         self.power = PowerMenu()
 
         self.compact = Button(
@@ -109,9 +113,9 @@ class Notch(Window):
                 self.power,
             ]
         )
-
-        self.notch_box = CenterBox(
-            name="notch-box",
+        
+        self.notch_box_top = CenterBox(
+            name="notch-box-top",
             orientation="h",
             h_align="center",
             v_align="center",
@@ -124,8 +128,28 @@ class Notch(Window):
             end_children=RoundedAngleEnd(name="corner-notch-right", style_classes=["corner-notch"], place="topright", height=self.corners["compact"]["right"]["height"], width=self.corners["compact"]["right"]["width"])
         )
 
-        self.hidden = False
+        self.notch_box_bottom = Box(name="notch-box-bottom",
+                                    orientation="h",
+                                    h_expand=True,
+                                    v_expand=True,
+                                    h_align="center",
+                                    v_align="center",
+                                    children=[self.floating_notification]
+        )
 
+
+        self.notch_box = CenterBox(
+            name="notch-box",
+            orientation="v",
+            h_align="center",
+            v_align="center",
+            start_children=self.notch_box_top,
+            center_children=self.notch_box_bottom
+        )
+
+
+
+        self.hidden = False
         self.add(self.notch_box)
         self.show_all()
         self.wallpapers.viewport.hide()
@@ -158,6 +182,7 @@ class Notch(Window):
             window.set_cursor(None)
 
     def close_notch(self):
+        self.floating_notification.remove_style_class("open")
         self.set_keyboard_mode("none")
         self.open_widget = None
 
@@ -165,10 +190,10 @@ class Notch(Window):
             self.notch_box.remove_style_class("hideshow")
             self.notch_box.add_style_class("hidden")
 
-        self.notch_box.children[0].children[0].children[0].animate_height(self.corners["compact"]["left"]["height"], 0.25, (0.5, 0.25, 0, 1))
-        self.notch_box.children[0].children[2].children[0].animate_height(self.corners["compact"]["right"]["height"], 0.25, (0.5, 0.25, 0, 1))
-        #self.notch_box.children[0].children[1].children[0].children[0].animate_width(60, 0.25)
-        #self.notch_box.children[0].children[1].children[0].children[2].animate_width(60, 0.25)
+        # print(self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0])
+        # print(self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0])
+        self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0].animate_height(self.corners["compact"]["left"]["height"], 0.25, (0.5, 0.25, 0, 1))
+        self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0].animate_height(self.corners["compact"]["right"]["height"], 0.25, (0.5, 0.25, 0, 1))
 
 
 
@@ -185,14 +210,20 @@ class Notch(Window):
 
         with open("./data.json", "r+") as file:
             self.data = json.load(file)
-            self.data["notch_status"] = "closed"
+            self.data["notch_status" + str(self.monitor_id)] = "closed"
             file.seek(0)
             json.dump(self.data, file, indent=2)
             file.truncate()
 
     def open_notch(self, widget: str):
         self.set_keyboard_mode("exclusive")
+        if self.open_widget not in ["notification", None] and widget == "notification":
+            return
+
         self.open_widget = widget
+
+        if self.open_widget is not "notification":
+            self.floating_notification.add_style_class("open")
 
         if self.hidden:
             self.notch_box.remove_style_class("hidden")
@@ -217,11 +248,8 @@ class Notch(Window):
             w.remove_style_class("open")
 
         try:
-            pass
-            self.notch_box.children[0].children[0].children[0].animate_height(self.corners[widget]["left"]["height"], 0.25)
-            self.notch_box.children[0].children[2].children[0].animate_height(self.corners[widget]["right"]["height"], 0.25)
-            #self.notch_box.children[0].children[1].children[0].children[0].animate_width(corners[widget]["left"]["ratio"], 0.25)
-            #self.notch_box.children[0].children[1].children[0].children[2].animate_width(corners[widget]["right"]["ratio"], 0.25)
+            self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0].animate_height(self.corners[widget]["left"]["height"], 0.25)
+            self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0].animate_height(self.corners[widget]["right"]["height"], 0.25)
         except KeyError:
             pass
 
@@ -268,11 +296,10 @@ class Notch(Window):
 
         with open("./data.json", "r+") as file:
             self.data = json.load(file)
-            self.data["notch_status"] = widget
+            self.data["notch_status" + str(self.monitor_id)] = widget
             file.seek(0)
             json.dump(self.data, file, indent=2)
             file.truncate()
-
 
 
     def colorpicker(self, button, event):

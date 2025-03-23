@@ -14,6 +14,8 @@ from fabric.widgets.image import Image
 from fabric.widgets.label import Label
 import modules.icons as icons
 
+import json
+
 class ActionButton(Button):
     def __init__(self, action: NotificationAction, index: int, total: int, notification_box):
         super().__init__(
@@ -141,7 +143,7 @@ class NotificationBox(Box):
             icon_path = icon_path[7:]
 
         if not os.path.exists(icon_path):
-            logger.warning(f"Icon path does not exist: {icon_path}")
+            # logger.warning(f"Icon path does not exist: {icon_path}")
             return None
 
         try:
@@ -214,8 +216,8 @@ class NotificationBox(Box):
         self.set_pointer_cursor(button, "arrow")
 
 class NotificationContainer(Box):
-    def __init__(self, server, monitor_id=None):
-        super().__init__(name="notification", orientation="v", spacing=4, v_expand=True, h_expand=True)
+    def __init__(self, server, monitor_id=None, h_expand=True, v_expand=True, h_align="fill", v_align="center"):
+        super().__init__(name="notification", orientation="v", spacing=4, v_expand=v_expand, h_expand=h_expand, h_align=h_align, v_align=v_align)
         self._server = server
         self.monitor_id = monitor_id
         self._server.connect("notification-added", self.on_new_notification)
@@ -230,7 +232,10 @@ class NotificationContainer(Box):
         GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.open_notch(\"notification\")'")
 
     def on_notification_closed(self, notification, reason):
-        GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.close_notch()'")
+        with open("./data.json", "r") as file:
+            data = json.load(file)
+            if data["notch_status" + str(self.monitor_id)] == "notification":
+                GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.close_notch()'")
         # Set cursor to default
         #self.set_pointer_cursor(self, "arrow")
         logger.info(f"Notification {notification.id} closed with reason: {reason}")
