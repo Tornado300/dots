@@ -135,6 +135,7 @@ class Notch(Window):
 
     def on_key_press(self, widget, event):
         print(event.keyval)
+        close = True
         match self.open_widget:
             case "launcher":
                 close = self.launcher.on_key_press_event(widget, event)
