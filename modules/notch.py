@@ -183,6 +183,7 @@ class Notch(Window):
 
     def close_notch(self):
         self.floating_notification.remove_style_class("open")
+        self.notch_box_bottom.remove_style_class("open")
         self.set_keyboard_mode("none")
         self.open_widget = None
 
@@ -215,6 +216,9 @@ class Notch(Window):
             json.dump(self.data, file, indent=2)
             file.truncate()
 
+        if len(self.notch_box.children[0].children[1].children[0].children[0].children) > 0:
+            self.open_notch("notification")
+
     def open_notch(self, widget: str):
         self.set_keyboard_mode("exclusive")
         if self.open_widget not in ["notification", None] and widget == "notification":
@@ -223,6 +227,7 @@ class Notch(Window):
         self.open_widget = widget
 
         if self.open_widget is not "notification":
+            self.notch_box_bottom.add_style_class("open")
             self.floating_notification.add_style_class("open")
 
         if self.hidden:
