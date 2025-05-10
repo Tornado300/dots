@@ -1,0 +1,25 @@
+{
+  "excluded_applications": [
+    "Hardware Locality lstopo",
+    "Qt Linguist",
+    "Qt Assistant",
+    "CMake",
+    "XAVA",
+    "Neovim",
+    "Qt V4L2 test Utility",
+    "Qt V4L2 video capture utility",
+    "btop++",
+    "mpv Media Player",
+    "UserFeedback-Konsole",
+    "Proton BattlEye Runtime",
+    "Proton Hotfix",
+    "Proton Experimental",
+    "Proton EasyAntiCheat Runtime",
+    "Steam Linux Runtime 3.0 (sniper)",
+    "UXTerm"
+  ],
+  "app_usage": {
+    "zen browser": 1,
+    "kitty": 1
+  }
+}
