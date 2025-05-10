@@ -1,18 +1,17 @@
 from fabric.widgets.box import Box
-from fabric.widgets.label import Label
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.button import Button
 from fabric.widgets.stack import Stack
 from fabric.widgets.wayland import WaylandWindow as Window
-from gi.repository import GLib, Gdk
+from gi.repository import Gdk
 from modules.launcher import AppLauncher
 from modules.dashboard.dashboard import Dashboard
 from modules.wallpapers import WallpaperSelector
 from modules.notification_popup import NotificationContainer
 from modules.power import PowerMenu
-import modules.icons as icons
 from modules.corners import RoundedAngleEnd
-
+from modules.colorpicker import Colorpicker
+from modules.project_manager import ProjectManager
 import json
 
 
@@ -31,26 +30,26 @@ class Notch(Window):
         )
         self.monitor_id = monitor_id
 
-        with open("./data.json", "r+") as file:
+        with open("./data/data.json", "r+") as file:
             self.data = json.load(file)
             self.data["notch_status" + str(self.monitor_id)] = "closed"
             file.seek(0)
             json.dump(self.data, file, indent=2)
             file.truncate()
 
-        
         self.open_widget = None
 
         self.corners = {
             "compact": {
-                "left": 
-                    {"height": 39, "width":60},
-                "right": 
-                    {"height": 39, "width":60}
+                "left":
+                    {"height": 39, "width": 60},
+                "right":
+                    {"height": 39, "width": 60}
             },
             "launcher": {
                 "left":
-                    {"height": 220, "width": 120}, "right":
+                    {"height": 220, "width": 120},
+                "right":
                     {"height": 220, "width": 120}
             },
             "wallpapers": {
@@ -79,11 +78,23 @@ class Notch(Window):
                 "right":
                     {"height": 375, "width": 60},
 
+            },
+            "colorpicker": {
+                "left":
+                    {"height": 175, "width": 60},
+                "right":
+                    {"height": 175, "width": 60}
+
+            },
+            "projectmanager": {
+                "left":
+                    {"height": 220, "width": 120},
+                "right":
+                    {"height": 220, "width": 120}
             }
 
 
         }
-
 
         self.dashboard = Dashboard()
         self.launcher = AppLauncher(monitor_id)
@@ -91,12 +102,22 @@ class Notch(Window):
         self.notification = NotificationContainer(server=server, monitor_id=monitor_id)
         self.floating_notification = NotificationContainer(server=server, monitor_id=monitor_id, h_expand=False)
         self.power = PowerMenu()
+        self.colorpicker = Colorpicker(monitor_id)
+        self.project_manager = ProjectManager(monitor_id)
 
-        self.compact = Button(
+        self.compact = Box(
             name="notch-compact",
             h_expand=True,
-            label=f"{self.data["username"]}@{self.data["hostname"]}",
-            on_clicked=lambda *_: self.open_notch("dashboard"))
+            v_expand=True,
+            children=[
+                Button(
+                    name="notch-compact-button",
+                    h_expand=True,
+                    v_expand=True,
+                    label=f"{self.data["username"]}@{self.data["hostname"]}",
+                    on_clicked=lambda *_: self.open_notch("dashboard"))
+            ]
+        )
 
         self.stack = Stack(
             name="notch-stack",
@@ -111,20 +132,22 @@ class Notch(Window):
                 self.wallpapers,
                 self.notification,
                 self.power,
+                self.colorpicker,
+                self.project_manager,
             ]
         )
-        
+
         self.notch_box_top = CenterBox(
             name="notch-box-top",
             orientation="h",
             h_align="center",
             v_align="center",
             start_children=RoundedAngleEnd(
-                name="corner-notch-left", 
-                style_classes=["corner-notch"], 
-                place="topleft", 
+                name="corner-notch-left",
+                style_classes=["corner-notch"],
+                place="topleft",
                 height=self.corners["compact"]["left"]["height"], width=self.corners["compact"]["left"]["width"]),
-            center_children=self.stack, 
+            center_children=self.stack,
             end_children=RoundedAngleEnd(name="corner-notch-right", style_classes=["corner-notch"], place="topright", height=self.corners["compact"]["right"]["height"], width=self.corners["compact"]["right"]["width"])
         )
 
@@ -135,8 +158,7 @@ class Notch(Window):
                                     h_align="center",
                                     v_align="center",
                                     children=[self.floating_notification]
-        )
-
+                                    )
 
         self.notch_box = CenterBox(
             name="notch-box",
@@ -146,8 +168,6 @@ class Notch(Window):
             start_children=self.notch_box_top,
             center_children=self.notch_box_bottom
         )
-
-
 
         self.hidden = False
         self.add(self.notch_box)
@@ -163,8 +183,11 @@ class Notch(Window):
         match self.open_widget:
             case "launcher":
                 close = self.launcher.on_key_press_event(widget, event)
-            case "wallpapers":
-                close = self.wallpapers.on_key_press_event(widget, event)
+            case "projectmanager":
+                close = self.project_manager.on_key_press_event(widget, event)
+
+            # case "wallpapers":
+                # close = self.wallpapers.on_key_press_event(widget, event)
             case "dashboard":
                 close = self.dashboard.on_key_press_event(widget, event)
 
@@ -193,14 +216,11 @@ class Notch(Window):
 
         # print(self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0])
         # print(self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0])
-        self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0].animate_height(self.corners["compact"]["left"]["height"], 0.25, (0.5, 0.25, 0, 1))
-        self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0].animate_height(self.corners["compact"]["right"]["height"], 0.25, (0.5, 0.25, 0, 1))
-
-
-
-        for widget in [self.launcher, self.dashboard, self.wallpapers, self.notification, self.power, self.compact]:
+        self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0].animate_height(self.corners["compact"]["left"]["height"], 0.5, (0.5, 0.25, 0, 1))
+        self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0].animate_height(self.corners["compact"]["right"]["height"], 0.5, (0.5, 0.25, 0, 1))
+        for widget in self.stack.children:
             widget.remove_style_class("open")
-        for style in ["launcher", "dashboard", "wallpapers", "notification", "power", "compact"]:
+        for style in ["launcher", "dashboard", "wallpapers", "notification", "power", "compact", "colorpicker", "projectmanager"]:
             self.stack.remove_style_class(style)
 
         self.wallpapers.on_close()
@@ -209,7 +229,7 @@ class Notch(Window):
         self.compact.remove_style_class("hidden")
         self.stack.set_visible_child(self.compact)
 
-        with open("./data.json", "r+") as file:
+        with open("./data/data.json", "r+") as file:
             self.data = json.load(file)
             self.data["notch_status" + str(self.monitor_id)] = "closed"
             file.seek(0)
@@ -226,7 +246,7 @@ class Notch(Window):
 
         self.open_widget = widget
 
-        if self.open_widget is not "notification":
+        if self.open_widget != "notification":
             self.notch_box_bottom.add_style_class("open")
             self.floating_notification.add_style_class("open")
 
@@ -240,80 +260,53 @@ class Notch(Window):
             "dashboard": self.dashboard,
             "wallpapers": self.wallpapers,
             "notification": self.notification,
-            "power": self.power
+            "power": self.power,
+            "colorpicker": self.colorpicker,
+            "projectmanager": self.project_manager
         }
 
-
-
-        # Limpiar clases y estados previos
-        #self.compact.add_style_class("hidden")
+        # self.compact.add_style_class("hidden")
         for style in widgets.keys():
             self.stack.remove_style_class(style)
         for w in widgets.values():
             w.remove_style_class("open")
 
         try:
-            self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0].animate_height(self.corners[widget]["left"]["height"], 0.25)
-            self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0].animate_height(self.corners[widget]["right"]["height"], 0.25)
+            self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0].animate_height(self.corners[widget]["left"]["height"], 0.5)
+            self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0].animate_height(self.corners[widget]["right"]["height"], 0.5)
         except KeyError:
             pass
 
         # Configurar según el widget solicitado
         if widget in widgets:
             # pass
-            self.stack.add_style_class(widget)
-            self.stack.set_visible_child(widgets[widget])
-            widgets[widget].add_style_class("open")
-
-            if widget == "power":
-                self.power.btn_shutdown.grab_focus()
-
-            if widget == "dashboard":
-                widgets[widget].widgets.audio.update_slider()
-
-            # Acciones específicas para el launcher
-            if widget == "launcher":
-                self.launcher.open_launcher()
-                self.launcher.search_entry.set_text("")
-                self.launcher.search_entry.grab_focus()
 
             if widget == "notification":
                 self.set_keyboard_mode("none")
-
-            if widget == "wallpapers":
-                self.wallpapers.search_entry.set_text("")
-                self.wallpapers.search_entry.grab_focus()
-                GLib.timeout_add(
-                    500, 
-                    lambda: (
-                        self.wallpapers.viewport.show(), 
-                        self.wallpapers.viewport.set_property("name", "wallpaper-icons")
-                    )
-                )
+            elif widget == "colorpicker":
+                self.set_keyboard_mode("on_demand")
+                widgets[widget].open()
+            else:
+                widgets[widget].open()
+                pass
 
             if widget != "wallpapers":
                 self.wallpapers.viewport.hide()
                 self.wallpapers.viewport.set_property("name", None)
 
+            self.stack.add_style_class(widget)
+            self.stack.set_visible_child(widgets[widget])
+            widgets[widget].add_style_class("open")
+
         else:
             self.stack.set_visible_child(self.dashboard)
 
-
-        with open("./data.json", "r+") as file:
+        with open("./data/data.json", "r+") as file:
             self.data = json.load(file)
             self.data["notch_status" + str(self.monitor_id)] = widget
             file.seek(0)
             json.dump(self.data, file, indent=2)
             file.truncate()
-
-
-    def colorpicker(self, button, event):
-        if event.button == 1:
-            GLib.spawn_command_line_async(f"bash {self.data["home_dir"]}/.config/fabric/scripts/hyprpicker-hex.sh")
-        elif event.button == 2:
-            GLib.spawn_command_line_async(f"bash {self.data["home_dir"]}/.config/fabric/scripts/hyprpicker-hsv.sh")
-        elif event.button == 3:
-            GLib.spawn_command_line_async(f"bash {self.data["home_dir"]}/.config/fabric/scripts/hyprpicker-rgb.sh")
 
     def toggle_hidden(self):
         self.hidden = not self.hidden

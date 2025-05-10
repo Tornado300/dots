@@ -1,13 +1,14 @@
+from modules.dashboard.audio import AudioModule
+from modules.calendar import Calendar
+from gi.repository import Gtk, GLib
+from modules.icons import icon
 from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.widgets.stack import Stack
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
-import modules.icons as icons
-from modules.calendar import Calendar
-from modules.dashboard.audio import AudioModule
+
 
 class Widgets(Box):
     def __init__(self, **kwargs):
@@ -36,27 +37,31 @@ class Widgets(Box):
         )
 
         self.audio = AudioModule()
-
         self.quickbuttons = Box(
             name="dashboard-segment-quickbuttons",
             style_classes=["dashboard"],
             children=[
-                Button("X"), 
-                Button("X"), 
-                Button("X"), 
-                Button("x")]
+                Button(
+                    name="dashboard-quickbuttons-colorpicker",
+                    style_classes=["dashboard-quickbutton"],
+                    child=Label(markup=icon("colorpicker", font_weight="bold")),
+                    v_expand=False,
+                    h_expand=False,
+                    on_clicked=lambda *_: (
+                        GLib.spawn_command_line_async("fabric-cli exec main-ui 'controller.open(\"colorpicker\")'")
+                    )),
+            ]
         )
-
         self.system = Box(
             name="dashboard-segment-system",
             style_classes=["dashboard"],
             orientation="v",
             v_expand=True,
             children=[
-                Label(label="System", style_classes=[""], h_align="center", v_align="start"), 
-                Label(label="cpu:", style_classes=["dashboard-sys-stats"], h_align="start", v_expand=True), 
-                Label(label="gpu:", style_classes=["dashboard-sys-stats"], h_align="start", v_expand=True), 
-                Label(label="ram:", style_classes=["dashboard-sys-stats"], h_align="start", v_expand=True), 
+                Label(label="System", style_classes=[""], h_align="center", v_align="start"),
+                Label(label="cpu:", style_classes=["dashboard-sys-stats"], h_align="start", v_expand=True),
+                Label(label="gpu:", style_classes=["dashboard-sys-stats"], h_align="start", v_expand=True),
+                Label(label="ram:", style_classes=["dashboard-sys-stats"], h_align="start", v_expand=True),
                 Label(label="network:", style_classes=["dashboard-sys-stats"], h_align="start", v_expand=True)]
         )
 
@@ -68,8 +73,6 @@ class Widgets(Box):
             spacing=10,
             children=[self.wifi, self.bluetooth]
         )
-
-
 
         self.container_bottom_right = Box(
             name="dashboard-container-bottom-right",
@@ -93,14 +96,9 @@ class Widgets(Box):
         self.add(self.container_bottom)
 
         self.show_all()
-    
-    def audio_slider_changed(self, value):
-        print(value.value)
 
     def format_slider_value(widget, scale, value):
         return f"{int(value)}%"
-
-
 
 
 class Dashboard(Box):
@@ -132,7 +130,6 @@ class Dashboard(Box):
             name="switcher",
             spacing=8,
         )
-
 
         self.stack.add_titled(self.widgets, "widgets", "Widgets")
         self.stack.add_titled(self.calendar, "calendar", "Calendar")
@@ -210,20 +207,20 @@ class Dashboard(Box):
                     case 106:  # 'j' key - navigate down in list
                         if self.selected_section in ["audio-output", "audio-input"]:
                             # Determine which dropdown is active
-                            active_dropdown = (self.widgets.audio.output_dropdown 
-                                              if self.selected_section == "audio-output" 
-                                              else self.widgets.audio.input_dropdown)
+                            active_dropdown = (self.widgets.audio.output_dropdown
+                                               if self.selected_section == "audio-output"
+                                               else self.widgets.audio.input_dropdown)
                             length = len(active_dropdown.element_list.children)
                             self.element_counter = (self.element_counter + 1) % length
                     case 107:  # 'k' key - navigate up in list
                         if self.selected_section in ["audio-output", "audio-input"]:
                             # Determine which dropdown is active
-                            active_dropdown = (self.widgets.audio.output_dropdown 
-                                              if self.selected_section == "audio-output" 
-                                              else self.widgets.audio.input_dropdown)
+                            active_dropdown = (self.widgets.audio.output_dropdown
+                                               if self.selected_section == "audio-output"
+                                               else self.widgets.audio.input_dropdown)
                             length = len(active_dropdown.element_list.children)
                             self.element_counter = (self.element_counter - 1) % length
-                    
+
                 if self.selected_section == "audio-input":
                     if keyval == 104:
                         self.widgets.audio.input_slider.value -= 5
@@ -242,6 +239,9 @@ class Dashboard(Box):
                 elif self.selected_section == "audio-input":
                     self.widgets.audio.input_dropdown.element_list.children[self.element_counter].grab_focus()
         return False
+
+    def open(self):
+        self.widgets.audio.update_slider()
 
     def on_close(self):
         self.widgets.audio.input_dropdown.close()

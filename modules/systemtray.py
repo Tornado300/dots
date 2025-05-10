@@ -1,6 +1,6 @@
+from gi.repository import Gray, Gtk, Gdk, GdkPixbuf, GLib
 import gi
 gi.require_version("Gray", "0.1")
-from gi.repository import Gray, Gtk, Gdk, GdkPixbuf, GLib
 
 
 class SystemTray(Gtk.Box):
@@ -58,31 +58,55 @@ class SystemTray(Gtk.Box):
                 print(f"Error failed to activate tray item: {e}")
         elif event.button == Gdk.BUTTON_SECONDARY:
             menu = item.get_menu()
-            # print(menu)
             menu.connect("popped-up", self.on_popped_up)
             # menu.set_monitor(Gdk.Display.get_monitor_at_window(button.get_display(), button.get_window()))
             if menu:
                 menu.set_name("system-tray-menu")
-                
+                alloc = button.get_allocation()
 
-                menu.popup_at_widget(
-                    button,
+                rect = Gdk.Rectangle()
+                rect.x = alloc.x
+                rect.y = alloc.y + 35
+                rect.width = 1
+                rect.height = 1
+
+                # menu.popup(None, None, self.position_menu, button, event.button, event.time)
+                # menu.attach_to_widget(button, None)
+
+                menu.popup_at_rect(
+                    button.get_window(),
+                    rect,
                     Gdk.Gravity.SOUTH,
                     Gdk.Gravity.NORTH,
                     event,
                 )
 
+                # print(menu.get_window().get_origin())
 
-                print(menu.get_children()[0])
-                print(menu.get_children()[0].get_children()[0])
-                print(menu.get_children()[0].get_children()[0].get_text())
-                # for child in menu.get_children():
-                    # for attr in dir(child):
-                        # if "__" not in attr:
-                            # print(attr)
             else:
                 item.context_menu(event.x, event.y)
 
-
     def on_popped_up(menu, final_rect, flipped_rect, flipped_x, flipped_y, a):
         pass
+
+    def position_menu(systray, menu, x, y, button):
+        # print(systray, menu, x, y, button)
+        # Retrieve the widget and its associated window
+        window = button.get_window()
+
+        # Get the monitor at the widget's window
+        display = Gdk.Display.get_default()
+        print(display)
+        monitor = display.get_monitor_at_window(window)
+        print(monitor)
+
+        # Obtain the monitor's geometry
+        monitor_geometry = monitor.get_geometry()
+        print(monitor_geometry.x, monitor_geometry.y)
+
+        # Calculate desired position (example: top-left corner of the monitor)
+        x = monitor_geometry.x + 1920
+        y = monitor_geometry.y
+
+        # Return the calculated position
+        return x, y, True

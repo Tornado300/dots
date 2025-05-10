@@ -1,11 +1,12 @@
+from gi.repository import Gtk, GLib
 import calendar
 from datetime import datetime
 import gi
-import modules.icons as icons
+from modules.icons import icon
 from fabric.widgets.label import Label
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GLib
+
 
 class Calendar(Gtk.Box):
     def __init__(self):
@@ -18,14 +19,14 @@ class Calendar(Gtk.Box):
         self.header = Gtk.Box(spacing=4, name="header")
         self.pack_start(self.header, False, False, 0)
 
-        self.prev_month_button = Gtk.Button(name="prev-month-button", child=Label(name="month-button-label", markup=icons.chevron_left))
+        self.prev_month_button = Gtk.Button(name="prev-month-button", child=Label(name="month-button-label", markup=icon("chevron_left")))
         self.prev_month_button.connect("clicked", self.on_prev_month_clicked)
         self.header.pack_start(self.prev_month_button, False, False, 0)
 
         self.month_label = Gtk.Label(name="month-label")
         self.header.pack_start(self.month_label, True, True, 0)
 
-        self.next_month_button = Gtk.Button(name="next-month-button", child=Label(name="month-button-label", markup=icons.chevron_right))
+        self.next_month_button = Gtk.Button(name="next-month-button", child=Label(name="month-button-label", markup=icon("chevron_right")))
         self.next_month_button.connect("clicked", self.on_next_month_clicked)
         self.header.pack_start(self.next_month_button, False, False, 0)
 
@@ -64,7 +65,7 @@ class Calendar(Gtk.Box):
                 bottom_spacer = Gtk.Box(hexpand=True, vexpand=True)
 
                 if day == 0:
-                    label = Label(name="day-empty", markup=icons.cancel)
+                    label = Label(name="day-empty", markup=icon("cancel"))
                 else:
                     label = Gtk.Label(label=str(day), name="day-label")
                     if (

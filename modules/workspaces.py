@@ -1,11 +1,12 @@
 from fabric.hyprland.widgets import Workspaces as OWorkspaces
 
+
 class Workspaces(OWorkspaces):
     def __init__(
         self,
-        workspace_range = [1, 10],
-        buttons = None,
-        buttons_factory = None,
+        workspace_range=[1, 10],
+        buttons=None,
+        buttons_factory=None,
         invert_scroll: bool = False,
         empty_scroll: bool = False,
         **kwargs,

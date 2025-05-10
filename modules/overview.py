@@ -1,3 +1,4 @@
+from gi.repository import Gdk, GdkPixbuf, GLib, Gtk
 import json
 
 import cairo
@@ -12,13 +13,11 @@ from fabric.widgets.overlay import Overlay
 from loguru import logger
 
 from utils.icon_resolver import IconResolver
-from fabric.widgets.eventbox import EventBox
 from utils.pywayland_export_toplevel import ClientOutput
 from widgets.popup_window_v2 import PopupWindow
 from widgets.rounded_image import CustomImage
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gdk, GdkPixbuf, GLib, Gtk
 
 icon_resolver = IconResolver()
 connection = Hyprland()

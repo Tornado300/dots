@@ -12,9 +12,10 @@ from fabric.widgets.button import Button
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.image import Image
 from fabric.widgets.label import Label
-import modules.icons as icons
+from modules.icons import icon
 
 import json
+
 
 class ActionButton(Button):
     def __init__(self, action: NotificationAction, index: int, total: int, notification_box):
@@ -90,6 +91,7 @@ class NotificationBox(Box):
         )
 
     def create_content(self, notification):
+        # print(notification.body)
         return Box(
             name="notification-content",
             spacing=8,
@@ -128,10 +130,10 @@ class NotificationBox(Box):
                             ],
                         ),
                         Label(
-                            markup=notification.body.replace("\n", " "),
+                            markup=notification.body.split("\n")[0],
                             h_align="start",
                             ellipsization="end",
-                        ) if notification.body else Box(),
+                        ) if notification.body else Box()
                     ],
                 ),
                 Box(h_expand=True),
@@ -167,7 +169,7 @@ class NotificationBox(Box):
     def create_close_button(self):
         close_button = Button(
             name="close-button",
-            child=Label(name="close-label", markup=icons.cancel),
+            child=Label(name="close-label", markup=icon("cancel")),
             on_clicked=lambda *_: self.notification.close("dismissed-by-user"),
         )
         close_button.connect("enter-notify-event", lambda *_: self.hover_button(close_button))
@@ -215,6 +217,7 @@ class NotificationBox(Box):
         self.resume_timeout()
         self.set_pointer_cursor(button, "arrow")
 
+
 class NotificationContainer(Box):
     def __init__(self, server, monitor_id=None, h_expand=True, v_expand=True, h_align="fill", v_align="center"):
         super().__init__(name="notification", orientation="v", spacing=4, v_expand=v_expand, h_expand=h_expand, h_align=h_align, v_align=v_align)
@@ -232,12 +235,12 @@ class NotificationContainer(Box):
         GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.open_notch(\"notification\")'")
 
     def on_notification_closed(self, notification, reason):
-        with open("./data.json", "r") as file:
+        with open("./data/data.json", "r") as file:
             data = json.load(file)
             if data["notch_status" + str(self.monitor_id)] == "notification":
                 GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.close_notch()'")
         # Set cursor to default
-        #self.set_pointer_cursor(self, "arrow")
+        # self.set_pointer_cursor(self, "arrow")
         logger.info(f"Notification {notification.id} closed with reason: {reason}")
         for child in self.get_children():
             child.destroy()

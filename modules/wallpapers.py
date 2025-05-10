@@ -2,10 +2,10 @@ import os
 from gi.repository import GdkPixbuf, Gtk, GLib
 from fabric.widgets.box import Box
 from fabric.widgets.entry import Entry
-from fabric.widgets.button import Button
+# from fabric.widgets.button import Button
 from fabric.widgets.scrolledwindow import ScrolledWindow
-from fabric.widgets.label import Label
-import modules.icons as icons
+# from fabric.widgets.label import Label
+# from modules.icons import icon
 import hashlib
 import json
 
@@ -14,7 +14,7 @@ class WallpaperSelector(Box):
     def __init__(self, wallpapers_dir: str, monitor_id=None, **kwargs):
         super().__init__(name="wallpapers", spacing=4, orientation="v", **kwargs)
 
-        self.data = json.load(open("./data.json", "r"))
+        self.data = json.load(open("./data/data.json", "r"))
 
         self.wallpaper_cache_dir = self.data["cache_dir"] + "wallpapers/"
         self.monitor_id = monitor_id
@@ -66,13 +66,14 @@ class WallpaperSelector(Box):
         GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.close_notch()'")
 
     def arrange_viewport(self, query: str = ""):
+        self.selected_wallpaper = 0
         self.viewport.get_model().clear()
         filtered_thumbnails = [
             (thumb, name)
             for thumb, name in self.thumbnails
             if query.casefold() in name.casefold()
         ]
-        
+
         # Ordenar los elementos alfabéticamente por el nombre de archivo
         filtered_thumbnails.sort(key=lambda x: x[1].lower())
 
@@ -98,7 +99,7 @@ class WallpaperSelector(Box):
 
     def _start_thumbnail_thread(self):
         """Inicia un hilo GLib para precargar las miniaturas."""
-        thread = GLib.Thread.new("thumbnail-loader", self._preload_thumbnails, None)
+        GLib.Thread.new("thumbnail-loader", self._preload_thumbnails, None)
 
     def _preload_thumbnails(self, _data):
         """Carga miniaturas en segundo plano y las añade a la vista."""
@@ -145,3 +146,18 @@ class WallpaperSelector(Box):
     @staticmethod
     def _is_image(file_name: str) -> bool:
         return file_name.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif', '.webp'))
+
+    def open(self):
+        self.search_entry.set_text("")
+        self.search_entry.grab_focus()
+        GLib.timeout_add(
+            500,
+            lambda: (
+                self.viewport.show(),
+                self.viewport.set_property("name", "wallpaper-icons")
+            )
+        )
+
+    def on_close(self):
+        self.viewport.hide()
+        self.viewport.set_property("name", None)

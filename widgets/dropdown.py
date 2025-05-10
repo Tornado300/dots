@@ -1,19 +1,20 @@
-from fabric.core.service import Property
+from gi.repository import Gtk  # , Gdk, GObject
+# from fabric.core.service import Property
 from fabric.widgets.box import Box
-from fabric.widgets.label import Label
+# from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.widgets.stack import Stack
-from fabric.widgets.entry import Entry
+# from fabric.widgets.entry import Entry
 from fabric.widgets.scrolledwindow import ScrolledWindow
 from fabric.widgets.widget import Widget
 from fabric.widgets.overlay import Overlay
 
 import gi
 import cairo
-import math
+# import math
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, GObject
+
 
 class DropdownFade(Gtk.DrawingArea, Widget):
     def __init__(self):
@@ -26,7 +27,7 @@ class DropdownFade(Gtk.DrawingArea, Widget):
     def on_draw(self, widget, cr):
         width = self.get_allocated_width()
         height = self.get_allocated_height()
-        
+
         # Create gradient
         gradient = cairo.LinearGradient(0, 0, 0, height)
         gradient.add_color_stop_rgba(0, 0, 0, 0, 0.5)  # dark at top
@@ -58,9 +59,9 @@ class Dropdown(Stack):
 
         self.element_list = Box(name="element-list", orientation="v")
         self.scrolled_window = ScrolledWindow(
-            name="scrolled-window", 
-            style_classes=["closed"], 
-            child=self.element_list, 
+            name="scrolled-window",
+            style_classes=["closed"],
+            child=self.element_list,
             v_scrollbar_policy="external",
             h_scrollbar_policy="never"
         )
@@ -68,7 +69,6 @@ class Dropdown(Stack):
         self.fade = DropdownFade()
 
         self.add(self.fade_overlay)
-
 
     def add_new_element(self, label, tooltip=None, image=None, callback=None, value=None):
         # callback gets  executed when button is pressed
@@ -119,4 +119,3 @@ class Dropdown(Stack):
         except ValueError:
             pass
         self.set_visible_child(self.current_selection)
-

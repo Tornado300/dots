@@ -9,6 +9,8 @@
 @import "/home/tornado300/.config/fabric/styles/power.sass";
 @import "/home/tornado300/.config/fabric/styles/workspaces.sass";
 @import "/home/tornado300/.config/fabric/styles/dropdown.sass";
+@import "/home/tornado300/.config/fabric/styles/colorpicker.sass";
+@import "/home/tornado300/.config/fabric/styles/projectmanager.sass";
 
 
 * {

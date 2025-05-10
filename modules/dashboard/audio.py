@@ -1,12 +1,11 @@
 from fabric.widgets.label import Label
-from fabric.widgets.button import Button
 from fabric.widgets.box import Box
 from fabric.widgets.scale import Scale
 from widgets.dropdown import Dropdown
-from fabric.audio import Audio, AudioStream
-
+from fabric.audio import Audio
 from gi.repository import GLib
 import json
+
 
 class AudioModule(Box):
     def __init__(self):
@@ -33,7 +32,6 @@ class AudioModule(Box):
         self.input_slider.connect("value-changed", self.slider_changed)
         self.input_slider.connect("format-value", self.format_slider_value)
 
-
         self.output_slider = Scale(
             name="dashboard-audio-output-slider",
             style_classes=["audio-slider"],
@@ -49,17 +47,15 @@ class AudioModule(Box):
         self.output_slider.connect("value-changed", self.slider_changed)
         self.output_slider.connect("format-value", self.format_slider_value)
 
-
         self.input_dropdown = Dropdown(name="dashboard-audio-input-dropdown", placeholder="Select Input Device")
         self.output_dropdown = Dropdown(name="dashboard-audio-output-dropdown", placeholder="Select Output Device")
-
 
         self.vertical_split = Box(
             orientation="h",
             spacing=5,
             children=[
                 Box(
-                    name="dashboard-audio-input-box", 
+                    name="dashboard-audio-input-box",
                     v_align="start",
                     orientation="v",
                     h_expand=True,
@@ -71,7 +67,7 @@ class AudioModule(Box):
                     ],
                 ),
                 Box(
-                    name="dashboard-audio-output-box", 
+                    name="dashboard-audio-output-box",
                     v_align="start",
                     orientation="v",
                     h_expand=True,
@@ -94,10 +90,8 @@ class AudioModule(Box):
         self.audio.connect("speaker_changed", self.speaker_changed)
         self.audio.connect("microphone_changed", self.microphone_changed)
 
-        self.add(Label(label="Audio", h_align="center", v_align="start")) # Module Heading
+        self.add(Label(label="Audio", h_align="center", v_align="start"))  # Module Heading
         self.add(self.vertical_split)
-
-
 
     def slider_changed(self, value):
         self.slider_active = True
@@ -131,32 +125,29 @@ class AudioModule(Box):
         removed_microphones = list(set(self.microphones) - set(audio.microphones))
         added_microphones = list(set(audio.microphones) - set(self.microphones))
 
-        with open("./data.json", "r+") as file:
+        with open("./data/audio.json", "r+") as file:
             self.data = json.load(file)
             # init json lists
-            if not "speakers" in self.data["device_name_mapping"]:
+            if "speakers" not in self.data["device_name_mapping"]:
                 self.data["device_name_mapping"]["speakers"] = {}
-            if not "microphones" in self.data["device_name_mapping"]:
+            if "microphones" not in self.data["device_name_mapping"]:
                 self.data["device_name_mapping"]["microphones"] = {}
 
-            if not "speakers" in self.data["excluded_devices"]:
+            if "speakers" not in self.data["excluded_devices"]:
                 self.data["excluded_devices"]["speakers"] = []
-            if not "microphones" in self.data["excluded_devices"]:
+            if "microphones" not in self.data["excluded_devices"]:
                 self.data["excluded_devices"]["microphones"] = []
-
-
 
             # map speaker name to custom name or register speaker if not done before
             for speaker in added_speakers:
-                if not speaker.name in self.data["excluded_devices"]["speakers"]:
+                if speaker.name not in self.data["excluded_devices"]["speakers"]:
                     speaker_name = self.resolve_device_name(speaker.name)
                     self.speakers.append(speaker)
                     self.output_dropdown.add_new_element(label=speaker_name, callback=lambda: self.set_device_as_default(speaker.name))
 
-
             # map microphone name to custom name or register microphone if not done before
             for microphone in added_microphones:
-                if not microphone.name in self.data["excluded_devices"]["microphones"]:
+                if microphone.name not in self.data["excluded_devices"]["microphones"]:
                     microphone_name = self.resolve_device_name(microphone.name)
                     self.microphones.append(microphone)
                     self.input_dropdown.add_new_element(label=microphone_name, callback=lambda: self.set_device_as_default(microphone.name))
@@ -165,7 +156,6 @@ class AudioModule(Box):
             file.seek(0)
             json.dump(self.data, file, indent=2)
             file.truncate()
-
 
         removed_buttons = []
         for speaker in removed_speakers:
@@ -181,7 +171,6 @@ class AudioModule(Box):
             if microphone_button.get_label() in removed_buttons:
                 self.input_dropdown.remove_element(microphone_button)
 
-
     def set_device_as_default(self, id):
         if "alsa_input" in id:
             GLib.spawn_command_line_async(f"pactl set-default-source {id}")
@@ -190,17 +179,16 @@ class AudioModule(Box):
         else:
             print("!!! wrong device id/name:", id)
 
-
     def resolve_device_name(self, name):
         if "alsa_input" in name:
-            if not name in self.data["device_name_mapping"]["microphones"]:
+            if name not in self.data["device_name_mapping"]["microphones"]:
                 self.data["device_name_mapping"]["microphones"][name] = name
                 return name
             else:
                 return self.data["device_name_mapping"]["microphones"][name]
 
         elif "alsa_output" in name:
-            if not name in self.data["device_name_mapping"]["speakers"]:
+            if name not in self.data["device_name_mapping"]["speakers"]:
                 self.data["device_name_mapping"]["speakers"][name] = name
                 return name
             else:

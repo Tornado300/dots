@@ -1,10 +1,10 @@
 # Parameters
-font_family: str = 'tabler-icons'
-font_weight: str = 'normal'
+# font_family: str = 'tabler-icons'
+# font_weight: str = 'normal'
 
-span: str = f"<span font-family='{font_family}' font-weight='{font_weight}'>"
+# span: str = f"<span font-family='{font_family}' font-weight='{font_weight}'>"
 
-#Panels
+# Panels
 apps: str = "&#xf1fd;"
 dashboard: str = "&#xea87;"
 chat: str = "&#xf59f;"
@@ -74,16 +74,24 @@ vol_mute: str = "&#xeb50;"
 vol_medium: str = "&#xeb4f;"
 vol_high: str = "&#xeb51;"
 
-#Confirm
+# Confirm
 accept: str = "&#xea5e;"
 cancel: str = "&#xeb55;"
 
-exceptions: list[str] = ['font_family', 'font_weight', 'span']
+# exceptions: list[str] = ['font_family', 'font_weight', 'span', 'exceptions', 'apply_span', 'set_weight']
 
-def apply_span() -> None:
+
+# def apply_span() -> None:
+# global_dict = globals()
+# for key in global_dict:
+# if key not in exceptions and not key.startswith('__'):
+# global_dict[key] = f"{span}{global_dict[key]}</span>"
+
+
+# apply_span()
+
+
+def icon(icon_name, font_weight="normal", font_family="tabler-icons"):
     global_dict = globals()
-    for key in global_dict:
-        if key not in exceptions and not key.startswith('__'):
-            global_dict[key] = f"{span}{global_dict[key]}</span>"
-
-apply_span()
+    if icon_name in global_dict:
+        return f"<span font-family='{font_family}' font-weight='{font_weight}'>{global_dict[icon_name]}</span>"

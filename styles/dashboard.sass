@@ -46,9 +46,30 @@
 
 #dashboard-segment-quickbuttons {
   min-height: 50px;
-  background-color: #00ffff;
+  background-color: @dark_surface;
   border-radius: 10px;
+  font-weight: bold;
+  font-size: 20px;
 }
+
+.dashboard-quickbutton {
+  background-color: @dark_subsurface_light;
+  border-radius: 35px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.dashboard-quickbutton:hover {
+  background-color: @inverted_highlight;
+}
+.dashboard-quickbutton:active {
+  background-color: #ffffff;
+}
+
 
 #dashboard-segment-audio {
   background-color: @dark_surface;
@@ -78,6 +99,7 @@
 
 #dashboard-container-bottom {
   padding-top: 5px;
+  padding-bottom: 10px;
   background-color: @transparent;
 }
 
@@ -142,7 +164,7 @@
 }
 
 .audio-slider {
-  background-color: @dark_subsurface;
+  background-color: @dark_subsurface_light;
   border-radius: 20px;
   margin-left: 5px;
   margin-right: 5px;

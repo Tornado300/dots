@@ -18,7 +18,7 @@
   min-height: 0px;
   min-width: 256px;
   border-radius: 0px;
-  transition: all 0.5s cubic-bezier(0.5, 0.25, 0, 1.25);
+  transition: all 0.5s cubic-bezier(0.5, 0.25, 0, 1);
 }
 
 #notch-stack.launcher {
@@ -26,6 +26,7 @@
   min-height: 220px;
   min-width: 480px;
   border-radius: 0px;
+  background-color: @transparent;
 }
 
 #notch-stack.dashboard {
@@ -54,10 +55,21 @@
   border-radius: 0px;
 }
 
+#notch-stack.projectmanager {
+  padding: 0px;
+  min-height: 220px;
+  min-width: 480px;
+  border-radius: 0px;
+  background-color: @transparent;
+}
+
+
 #app-launcher,
+#project-manager,
 #dashboard,
 #wallpapers,
 #notification,
+#colorpicker,
 #power-menu {
   opacity: 1;
   margin: -800px;
@@ -65,24 +77,29 @@
 }
 
 #app-launcher.open,
+#project-manager.open,
 #dashboard.open,
 #wallpapers.open,
 #wallpapers-viewport.open,
 #notification.open,
+#colorpicker.open,
 #power-menu.open {
   opacity: 1;
   margin: 0px;
 }
 
 #notch-compact {
-  font-weight: bold;
   border-radius: 0 0 0px 0px;
-  transition: all 0.1s ease;
+  transition: all 0.25s cubic-bezier(0.5, 0.25, 0, 1);
   background-color: @dark_background;
-  padding-top: 12px;
-  padding-bottom: 8px;
   }
 
+#notch-compact-button {
+  font-weight: bold;
+  padding-top: 12px;
+  padding-bottom: 8px;
+  background-color: @transparent;
+}
 
 .corner-notch {
     background-color: @dark_background;
