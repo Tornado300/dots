@@ -2,16 +2,12 @@ import os
 from gi.repository import GdkPixbuf, GLib, Gdk
 from loguru import logger
 from widgets.rounded_image import CustomImage
-
-from fabric.notifications.service import (
-    Notification,
-    NotificationAction,
-)
 from fabric.widgets.box import Box
 from fabric.widgets.button import Button
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.image import Image
 from fabric.widgets.label import Label
+from fabric.notifications.service import Notification, NotificationAction
 from modules.icons import icon
 
 import json
@@ -45,12 +41,9 @@ class NotificationBox(Box):
     def __init__(self, notification: Notification, timeout_ms=5000):
         super().__init__(
             name="notification-box",
-            # spacing=8,
             orientation="v",
             children=[
-                 # self.create_header(notification),
                 self.create_content(notification),
-                # self.create_action_buttons(notification),
             ],
         )
         self.notification = notification
@@ -91,7 +84,6 @@ class NotificationBox(Box):
         )
 
     def create_content(self, notification):
-        # print(notification.body)
         return Box(
             name="notification-content",
             spacing=8,
@@ -145,7 +137,6 @@ class NotificationBox(Box):
             icon_path = icon_path[7:]
 
         if not os.path.exists(icon_path):
-            # logger.warning(f"Icon path does not exist: {icon_path}")
             return None
 
         try:
@@ -177,7 +168,6 @@ class NotificationBox(Box):
         return close_button
 
     def start_timeout(self):
-        # print("timeout: ", self.timeout_ms)
         self.stop_timeout()
         self._timeout_id = GLib.timeout_add(self.timeout_ms, self.close_notification)
 
@@ -239,8 +229,6 @@ class NotificationContainer(Box):
             data = json.load(file)
             if data["notch_status" + str(self.monitor_id)] == "notification":
                 GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.close_notch()'")
-        # Set cursor to default
-        # self.set_pointer_cursor(self, "arrow")
         logger.info(f"Notification {notification.id} closed with reason: {reason}")
         for child in self.get_children():
             child.destroy()

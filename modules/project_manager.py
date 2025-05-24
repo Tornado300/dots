@@ -143,7 +143,6 @@ class ProjectManager(Box):
                     )
                 ],
             ),
-            # TODO implement nvim start
             on_clicked=lambda *_: (subprocess.Popen(["kitty", "--detach", "nvim", self.all_projects[project]]), self.close_manager(), self.add_usage(project)),
 
         )

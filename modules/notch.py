@@ -1,6 +1,5 @@
 from fabric.widgets.box import Box
 from fabric.widgets.centerbox import CenterBox
-# from fabric.widgets.button import Button
 from fabric.widgets.stack import Stack
 from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import Gdk
@@ -63,94 +62,6 @@ class Notch(Window):
         self.add_widget(WidgetWrapper(widget=Colorpicker(monitor_id), name="colorpicker", left_corner={"height": 175, "width": 60}, right_corner={"height": 175, "width": 60}))
         self.add_widget(WidgetWrapper(widget=ProjectManager(monitor_id), name="projectmanager", left_corner={"height": 220, "width": 120}, right_corner={"height": 220, "width": 120}, needs_key_events=True))
 
-        """
-        self.corners = {
-            "compact": {
-                "left":
-                    {"height": 39, "width": 60},
-                "right":
-                    {"height": 39, "width": 60}
-            },
-            "launcher": {
-                "left":
-                    {"height": 220, "width": 120},
-                "right":
-                    {"height": 220, "width": 120}
-            },
-            "wallpapers": {
-                "left":
-                    {"height": 420, "width": 120},
-                "right":
-                    {"height": 420, "width": 120}
-            },
-            "notification": {
-                "left":
-                    {"height": 78, "width": 60},
-                "right":
-                    {"height": 78, "width": 60},
-
-            },
-            "power": {
-                "left":
-                    {"height": 65, "width": 60},
-                "right":
-                    {"height": 65, "width": 60},
-
-            },
-            "dashboard": {
-                "left":
-                    {"height": 375, "width": 60},
-                "right":
-                    {"height": 375, "width": 60},
-
-            },
-            "colorpicker": {
-                "left":
-                    {"height": 175, "width": 60},
-                "right":
-                    {"height": 175, "width": 60}
-
-            },
-            "projectmanager": {
-                "left":
-                    {"height": 220, "width": 120},
-                "right":
-                    {"height": 220, "width": 120}
-            }
-
-
-        }
-
-        self.dashboard = Dashboard()
-        self.launcher = AppLauncher(monitor_id)
-        self.wallpapers = WallpaperSelector(self.data["wallpapers_dir"])
-        self.notification = NotificationContainer(server=server, monitor_id=monitor_id)
-        self.floating_notification = NotificationContainer(server=server, monitor_id=monitor_id, h_expand=False)
-        self.power = PowerMenu()
-        self.colorpicker = Colorpicker(monitor_id)
-        self.project_manager = ProjectManager(monitor_id)
-        self.compact = Compact()
-
-
-        self.stack = Stack(
-            name="notch-stack",
-            orientation="v",
-            h_expand=True,
-            transition_type="crossfade",
-            transition_duration=250,
-            children=[
-                self.compact,
-                self.launcher,
-                self.dashboard,
-                self.wallpapers,
-                self.notification,
-                self.power,
-                self.colorpicker,
-                self.project_manager,
-            ]
-        )
-        """
-
         self.stack = Stack(
             name="notch-stack",
             orientation="v",
@@ -171,8 +82,6 @@ class Notch(Window):
                 place="topleft",
                 height=self.widgets["compact"].corners["left"]["height"],
                 width=self.widgets["compact"].corners["left"]["width"],
-                # height=self.corners["compact"]["left"]["height"],
-                # width=self.corners["compact"]["left"]["width"]
             ),
             center_children=self.stack,
             end_children=RoundedAngleEnd(
@@ -181,8 +90,6 @@ class Notch(Window):
                 place="topright",
                 height=self.widgets["compact"].corners["right"]["height"],
                 width=self.widgets["compact"].corners["right"]["width"],
-                # height=self.corners["compact"]["right"]["height"],
-                # width=self.corners["compact"]["right"]["width"]
             )
         )
 
@@ -211,7 +118,6 @@ class Notch(Window):
         self.show_all()
         self.widgets["wallpapers"].widget.viewport.hide()
 
-        # Conectar evento de teclado
         self.connect("key-press-event", self.on_key_press)
 
     def on_key_press(self, widget, event):
@@ -220,18 +126,6 @@ class Notch(Window):
         if self.widgets[self.open_widget].needs_key_events:
             close = self.widgets[self.open_widget].widget.on_key_press_event(widget, event)
 
-        """
-        match self.open_widget:
-            case "launcher":
-                close = self.launcher.on_key_press_event(widget, event)
-            case "projectmanager":
-                close = self.project_manager.on_key_press_event(widget, event)
-
-            # case "wallpapers":
-                # close = self.wallpapers.on_key_press_event(widget, event)
-            case "dashboard":
-                close = self.dashboard.on_key_press_event(widget, event)
-        """
         if close and event.keyval == 65307:
             self.close_notch()
 
@@ -255,23 +149,17 @@ class Notch(Window):
             self.notch_box.remove_style_class("hideshow")
             self.notch_box.add_style_class("hidden")
 
-        # self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0].animate_height(self.corners["compact"]["left"]["height"], 0.5, (0.5, 0.25, 0, 1))
-        # self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0].animate_height(self.corners["compact"]["right"]["height"], 0.5, (0.5, 0.25, 0, 1))
-
         self.notch_corner_left.animate_height(self.widgets["compact"].corners["left"]["height"], 0.5, (0.5, 0.25, 0, 1))  # left notch corner
         self.notch_corner_right.animate_height(self.widgets["compact"].corners["right"]["height"], 0.5, (0.5, 0.25, 0, 1))  # right notch corner
 
         for widget in self.stack.children:
             widget.remove_style_class("open")
-        # for style in ["launcher", "dashboard", "wallpapers", "notification", "power", "compact", "colorpicker", "projectmanager"]:
         for style in self.widgets.keys():
             self.stack.remove_style_class(style)
 
         for widget in self.widgets:
             if self.widgets[widget].on_close:
                 self.widgets[widget].widget.on_close()
-        # self.wallpapers.on_close()
-        # self.dashboard.on_close()
 
         self.widgets["compact"].widget.remove_style_class("hidden")
         self.stack.set_visible_child(self.widgets["compact"].widget)
@@ -301,20 +189,6 @@ class Notch(Window):
             self.notch_box.remove_style_class("hidden")
             self.notch_box.add_style_class("hideshow")
 
-        """
-        widgets = {
-            "compact": self.compact,
-            "launcher": self.launcher,
-            "dashboard": self.dashboard,
-            "wallpapers": self.wallpapers,
-            "notification": self.notification,
-            "power": self.power,
-            "colorpicker": self.colorpicker,
-            "projectmanager": self.project_manager
-        }
-        """
-
-        # self.compact.add_style_class("hidden")
         for style in self.widgets.keys():
             self.stack.remove_style_class(style)
         for w in self.widgets.values():
@@ -326,7 +200,6 @@ class Notch(Window):
         except KeyError:
             pass
 
-        # Configurar según el widget solicitado
         if widget in self.widgets.keys():
             pass
 

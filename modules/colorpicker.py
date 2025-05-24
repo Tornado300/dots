@@ -80,15 +80,6 @@ class Colorpicker(Box):
         self.rgb_box.children[1].set_label("")
         self.hsv_box.children[1].set_label("")
 
-        # close_thread = threading.Thread(target=self.close_dashboard)
         picker_thread = threading.Thread(target=self.exec_hyprpicker)
 
-        # close_thread.start()
         picker_thread.start()
-
-        # Wait for both operations to complete
-        # close_thread.join()
-        # picker_thread.join()
-
-        # """
-        # GLib.spawn_command_line_async("fabric-cli exec main-ui 'controller.open(\"colorpicker\")'")

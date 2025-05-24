@@ -11,6 +11,7 @@ from gi.repository import GLib, Gtk
 from rapidfuzz import fuzz
 import json
 
+
 class AppLauncher(Box):
     def __init__(self, monitor_id, **kwargs):
         super().__init__(
@@ -110,8 +111,6 @@ class AppLauncher(Box):
         else:
             filtered_apps_iter = self.sort_applications(query)
 
-        # should_resize = operator.length_hint(filtered_apps_iter) == len(self._all_apps)
-
         self._arranger_handler = idle_add(
             lambda *args: self.add_next_application(*args) or False, filtered_apps_iter, pin=True,
         )
@@ -126,7 +125,6 @@ class AppLauncher(Box):
         return True
 
     def bake_application_slot(self, app: DesktopApp | dict, **kwargs) -> Button:
-        # print(app, self.custom_entrys[app])
         if isinstance(app, str):
             return Button(
                 name="app-slot-button",
@@ -145,7 +143,6 @@ class AppLauncher(Box):
                     ],
                 ),
                 on_clicked=lambda *_: (GLib.spawn_command_line_async(self.custom_entrys[app]), self.add_usage(app.casefold())),
-                # on_clicked=lambda *_: (print("test!!!!!")),
             )
         else:
             return Button(
@@ -167,7 +164,6 @@ class AppLauncher(Box):
                 ),
                 tooltip_text=app.description,
                 on_clicked=lambda *_: (app.launch(), self.close_launcher(), self.add_usage(app.display_name.casefold())),
-                # on_clicked=lambda *_: (print("test2!!!!")),
                 **kwargs,
             )
 
@@ -193,7 +189,6 @@ class AppLauncher(Box):
                 else:
                     pairs.append([(fuzz.WRatio(query.casefold(), app.casefold()) * 0.7), app])
 
-
         result = sorted(pairs, key=lambda pair: pair[0], reverse=True)
         result = [r[1] for r in result]
         return iter(result)
@@ -201,8 +196,6 @@ class AppLauncher(Box):
     def add_usage(_, app_name):
         with open("./data/launcher.json", "r+") as file:
             data = json.load(file)
-            result = sorted(data["app_usage"], key=lambda pair: pair[0], reverse=True)
-            print(result)
             if app_name in data["app_usage"]:
                 data["app_usage"][app_name] += 1
             else:

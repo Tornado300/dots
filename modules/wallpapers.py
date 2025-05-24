@@ -2,10 +2,7 @@ import os
 from gi.repository import GdkPixbuf, Gtk, GLib
 from fabric.widgets.box import Box
 from fabric.widgets.entry import Entry
-# from fabric.widgets.button import Button
 from fabric.widgets.scrolledwindow import ScrolledWindow
-# from fabric.widgets.label import Label
-# from modules.icons import icon
 import hashlib
 import json
 
@@ -74,10 +71,8 @@ class WallpaperSelector(Box):
             if query.casefold() in name.casefold()
         ]
 
-        # Ordenar los elementos alfabéticamente por el nombre de archivo
         filtered_thumbnails.sort(key=lambda x: x[1].lower())
 
-        # Añadir los elementos ordenados al modelo
         for pixbuf, file_name in filtered_thumbnails:
             self.viewport.get_model().append([pixbuf, file_name])
 
@@ -89,7 +84,6 @@ class WallpaperSelector(Box):
                 file_name = pic
         # check if multi-image wallpaper
         full_path = os.path.join(self.wallpapers_dir, file_name.replace(".", "$#!#$"))
-        # print(full_path)
         if os.path.exists(full_path.replace("$#!#$", "_L.")) and os.path.exists(full_path.replace("$#!#$", "_R.")):
             GLib.spawn_command_line_async(f"swww img -o DP-1 {full_path.replace("$#!#$", "_L.")}")
             GLib.spawn_command_line_async(f"swww img -o DP-3 {full_path.replace("$#!#$", "_R.")}")
@@ -103,11 +97,10 @@ class WallpaperSelector(Box):
 
     def _preload_thumbnails(self, _data):
         """Carga miniaturas en segundo plano y las añade a la vista."""
-        for file_name in sorted(self.files):  # Ordenar alfabéticamente antes de procesar
+        for file_name in sorted(self.files):
             full_path = os.path.join(self.wallpapers_dir, file_name)
             cache_path = self._get_cache_path(file_name)
 
-            # Generar o cargar miniatura
             if not os.path.exists(cache_path):
                 pixbuf = self._create_thumbnail(full_path)
                 if pixbuf:
@@ -115,14 +108,13 @@ class WallpaperSelector(Box):
             else:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file(cache_path)
 
-            # Añadir miniatura al modelo y actualizar la interfaz
             if pixbuf:
                 GLib.idle_add(self._add_thumbnail_to_view, pixbuf, file_name)
 
     def _add_thumbnail_to_view(self, pixbuf, file_name):
         self.thumbnails.append((pixbuf, file_name))
         self.viewport.get_model().append([pixbuf, file_name.split(".")[0]])
-        return False  # Detiene el callback en GLib
+        return False
 
     def _create_thumbnail(self, image_path: str, thumbnail_size=96):
         try:

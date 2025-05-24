@@ -75,7 +75,6 @@ class RoundedAngleEnd(Gtk.DrawingArea, Widget):
         self.connect("draw", self.on_draw)
 
     def animate_height(self, value: int, duration: float, bezier_curve: tuple = (0.5, 0.25, 0, 1.25)):
-        # print("#", value)
         self.height_animator.pause()
         self.height_animator.duration = duration
         self.height_animator.bezier_curve = bezier_curve
@@ -111,8 +110,6 @@ class RoundedAngleEnd(Gtk.DrawingArea, Widget):
 
     def on_draw(self, _, cr: cairo.Context):
         context = self.get_style_context()
-        # border_color: Gdk.RGBA = context.get_border_color(Gtk.StateFlags.NORMAL)
-        # border_width = (max((border := context.get_border(Gtk.StateFlags.NORMAL)).top, border.bottom, border.left, border.right) * 2)
 
         allocation = self.get_allocation()
         self.alloc_width, self.alloc_height = allocation.width, allocation.height

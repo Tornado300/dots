@@ -1,9 +1,3 @@
-# Parameters
-# font_family: str = 'tabler-icons'
-# font_weight: str = 'normal'
-
-# span: str = f"<span font-family='{font_family}' font-weight='{font_weight}'>"
-
 # Panels
 apps: str = "&#xf1fd;"
 dashboard: str = "&#xea87;"
@@ -77,18 +71,6 @@ vol_high: str = "&#xeb51;"
 # Confirm
 accept: str = "&#xea5e;"
 cancel: str = "&#xeb55;"
-
-# exceptions: list[str] = ['font_family', 'font_weight', 'span', 'exceptions', 'apply_span', 'set_weight']
-
-
-# def apply_span() -> None:
-# global_dict = globals()
-# for key in global_dict:
-# if key not in exceptions and not key.startswith('__'):
-# global_dict[key] = f"{span}{global_dict[key]}</span>"
-
-
-# apply_span()
 
 
 def icon(icon_name, font_weight="normal", font_family="tabler-icons"):

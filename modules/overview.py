@@ -165,7 +165,7 @@ class Overview(PopupWindow):
                             self.clients[address].size[0] - 7,
                             self.clients[address].size[1] - 7,
                             2,
-                        ),  # type: ignore
+                        ),
                     )
                 )
                 if address in self.clients

@@ -1,4 +1,3 @@
-
 from typing import cast
 from fabric import Service, Signal, Property
 from gi.repository import GLib, Gtk
@@ -152,7 +151,6 @@ class Animator(Service):
         self._timeline_pos = min(1.0, elapsed / self._duration)
         self.value = self.do_ease(self._timeline_pos)
 
-        # print(self._timeline_pos)
         if self._timeline_pos >= 1.0:
             if not self.repeat:
                 self.value = self.max_value

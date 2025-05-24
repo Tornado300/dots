@@ -1,17 +1,13 @@
-from gi.repository import Gtk  # , Gdk, GObject
-# from fabric.core.service import Property
+from gi.repository import Gtk
 from fabric.widgets.box import Box
-# from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.widgets.stack import Stack
-# from fabric.widgets.entry import Entry
 from fabric.widgets.scrolledwindow import ScrolledWindow
 from fabric.widgets.widget import Widget
 from fabric.widgets.overlay import Overlay
 
 import gi
 import cairo
-# import math
 
 gi.require_version("Gtk", "3.0")
 

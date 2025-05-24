@@ -57,8 +57,6 @@ class PowerMenu(Box):
         )
 
         self.buttons = [
-            # self.btn_lock,
-            # self.btn_suspend,
             self.btn_shutdown,
             self.btn_logout,
             self.btn_reboot,

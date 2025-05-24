@@ -25,11 +25,9 @@ class SystemTray(Gtk.Box):
             lambda button, event: self.on_button_click(button, item, event),
         )
 
-        # Obtiene el pixmap del ícono
         pixmap = Gray.get_pixmap_for_pixmaps(item.get_icon_pixmaps(), self.pixel_size)
 
         try:
-            # Convierte el pixmap en pixbuf o carga un ícono por defecto si no hay pixmap
             if pixmap is not None:
                 pixbuf = pixmap.as_pixbuf(self.pixel_size, GdkPixbuf.InterpType.HYPER)
             else:
@@ -39,14 +37,12 @@ class SystemTray(Gtk.Box):
                     Gtk.IconLookupFlags.FORCE_SIZE,
                 )
         except GLib.Error:
-            # Si no encuentra el ícono, usa un ícono por defecto
             pixbuf = Gtk.IconTheme().get_default().load_icon(
                 "image-missing",
                 self.pixel_size,
                 Gtk.IconLookupFlags.FORCE_SIZE,
             )
 
-        # Asigna la imagen al botón
         button.set_image(Gtk.Image.new_from_pixbuf(pixbuf))
         return button
 
@@ -59,7 +55,6 @@ class SystemTray(Gtk.Box):
         elif event.button == Gdk.BUTTON_SECONDARY:
             menu = item.get_menu()
             menu.connect("popped-up", self.on_popped_up)
-            # menu.set_monitor(Gdk.Display.get_monitor_at_window(button.get_display(), button.get_window()))
             if menu:
                 menu.set_name("system-tray-menu")
                 alloc = button.get_allocation()
@@ -69,9 +64,6 @@ class SystemTray(Gtk.Box):
                 rect.y = alloc.y + 35
                 rect.width = 1
                 rect.height = 1
-
-                # menu.popup(None, None, self.position_menu, button, event.button, event.time)
-                # menu.attach_to_widget(button, None)
 
                 menu.popup_at_rect(
                     button.get_window(),

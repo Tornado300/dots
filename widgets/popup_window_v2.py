@@ -208,8 +208,7 @@ class PopupWindow(WaylandWindow):
             "slide-left",
             "slide-up",
             "slide-down",
-        ]
-        | None = None,
+        ] | None = None,
         transition_duration: int = 100,
         popup_visible: bool = False,
         anchor: Literal[
