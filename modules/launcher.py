@@ -11,7 +11,6 @@ from gi.repository import GLib, Gtk
 from rapidfuzz import fuzz
 import json
 
-
 class AppLauncher(Box):
     def __init__(self, monitor_id, **kwargs):
         super().__init__(
@@ -185,13 +184,17 @@ class AppLauncher(Box):
                 continue
             if isinstance(app, DesktopApp):
                 if app.display_name.casefold() in self.data["app_usage"]:
-                    pairs.append([(fuzz.WRatio(query, app.display_name.casefold()) * 0.7) + (self.data["app_usage"][app.display_name.casefold()] * 0.3), app])
+                    pairs.append([(fuzz.WRatio(query.casefold(), app.display_name.casefold()) * 0.7) + (self.data["app_usage"][app.display_name.casefold()] * 0.3), app])
                 else:
-                    pairs.append([(fuzz.WRatio(query, app.display_name.casefold()) * 0.7), app])
+                    pairs.append([(fuzz.WRatio(query.casefold(), app.display_name.casefold()) * 0.7), app])
+            else:
+                if app.casefold() in self.data["app_usage"]:
+                    pairs.append([(fuzz.WRatio(query.casefold(), app.casefold()) * 0.7) + (self.data["app_usage"][app.casefold()] * 0.3), app])
+                else:
+                    pairs.append([(fuzz.WRatio(query.casefold(), app.casefold()) * 0.7), app])
+
 
         result = sorted(pairs, key=lambda pair: pair[0], reverse=True)
-        for app in result:
-            print(app[0], app[1].display_name)
         result = [r[1] for r in result]
         return iter(result)
 
