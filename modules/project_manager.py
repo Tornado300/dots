@@ -9,6 +9,7 @@ from gi.repository import GLib, Gtk
 
 from rapidfuzz import fuzz
 import json
+import subprocess
 
 
 class ProjectManager(Box):
@@ -19,8 +20,18 @@ class ProjectManager(Box):
             all_visible=False,
             **kwargs,
         )
+        with open("./data/project_manager.json", "r+") as file:
+            self.data = json.load(file)
+            if "project_usage" not in self.data:
+                self.data["project_usage"] = {}
+            if "projects" not in self.data:
+                self.data["projects"] = {}
+            file.seek(0)
+            json.dump(self.data, file, indent=2)
+            file.truncate()
+
         self.monitor_id = monitor_id
-        self.all_projects = {"fabirc ui": "~/.config/fabric/"}
+        self.all_projects = self.data["projects"]
         self._arranger_handler: int = 0
 
         self.viewport = Box(name="viewport", spacing=4, orientation="v")
@@ -112,36 +123,58 @@ class ProjectManager(Box):
             name="project-slot-button",
             child=Box(
                 name="project-slot-box",
-                orientation="h",
-                spacing=10,
+                orientation="v",
+                h_align="start",
+                spacing=0,
                 children=[
                     Label(
                         name="project-label",
                         label=project,
                         ellipsization="end",
                         v_align="center",
-                        h_align="center",
+                        h_align="start",
                     ),
                     Label(
                         name="project-path",
-                        label=self.all_projects[project]
+                        label=self.all_projects[project],
+                        v_align="center",
+                        h_align="start",
+                        ellipsization="end"
                     )
                 ],
             ),
             # TODO implement nvim start
-            on_clicked=lambda *_: (),
+            on_clicked=lambda *_: (subprocess.Popen(["kitty", "--detach", "nvim", self.all_projects[project]]), self.close_manager(), self.add_usage(project)),
+
         )
 
     def sort_projects(self, query):
         with open("./data/project_manager.json", "r+") as file:
-            data = json.load(file)
+            self.data = json.load(file)
             file.seek(0)
-            json.dump(data, file, indent=2)
+            json.dump(self.data, file, indent=2)
             file.truncate()
+        self.all_projects = self.data["projects"]
         pairs = []
         for project in self.all_projects:
-            pairs.append([fuzz.WRatio(query, project.casefold()), project])
+            if project.casefold() in self.data["project_usage"]:
+                pairs.append([(fuzz.WRatio(query, project.casefold()) * 0.7) + (self.data["project_usage"][project.casefold()] * 0.3), project])
+            else:
+                pairs.append([(fuzz.WRatio(query, project.casefold()) * 0.7), project])
 
         result = sorted(pairs, key=lambda pair: pair[0], reverse=True)
         result = [r[1] for r in result]
         return iter(result)
+
+    def add_usage(self, project_name):
+        with open("./data/project_manager.json", "r+") as file:
+            self.data = json.load(file)
+            result = sorted(self.data["project_usage"], key=lambda pair: pair[0], reverse=True)
+            print(result)
+            if project_name.casefold() in self.data["project_usage"]:
+                self.data["project_usage"][project_name.casefold()] += 1
+            else:
+                self.data["project_usage"][project_name.casefold()] = 1
+            file.seek(0)
+            json.dump(self.data, file, indent=2)
+            file.truncate()
