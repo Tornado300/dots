@@ -1,6 +1,6 @@
 from fabric.widgets.box import Box
 from fabric.widgets.centerbox import CenterBox
-from fabric.widgets.button import Button
+# from fabric.widgets.button import Button
 from fabric.widgets.stack import Stack
 from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import Gdk
@@ -12,7 +12,20 @@ from modules.power import PowerMenu
 from modules.corners import RoundedAngleEnd
 from modules.colorpicker import Colorpicker
 from modules.project_manager import ProjectManager
+from modules.compact import Compact
 import json
+
+
+class WidgetWrapper:
+    def __init__(self, widget, name, left_corner, right_corner, needs_key_events=False, on_close=False):
+        self.widget = widget
+        self.name = name
+        self.needs_key_events = needs_key_events
+        self.on_close = on_close
+        self.corners = {
+            "left": left_corner,
+            "right": right_corner
+        }
 
 
 class Notch(Window):
@@ -29,6 +42,8 @@ class Notch(Window):
             all_visible=True,
         )
         self.monitor_id = monitor_id
+        self.widgets = {}
+        self.open_widget = None
 
         with open("./data/data.json", "r+") as file:
             self.data = json.load(file)
@@ -37,8 +52,18 @@ class Notch(Window):
             json.dump(self.data, file, indent=2)
             file.truncate()
 
-        self.open_widget = None
+        self.floating_notification = NotificationContainer(server=server, monitor_id=monitor_id, h_expand=False)
 
+        self.add_widget(WidgetWrapper(widget=Compact(), name="compact", left_corner={"height": 39, "width": 60}, right_corner={"height": 39, "width": 60}))
+        self.add_widget(WidgetWrapper(widget=AppLauncher(monitor_id), name="launcher", left_corner={"height": 220, "width": 120}, right_corner={"height": 220, "width": 120}, needs_key_events=True))
+        self.add_widget(WidgetWrapper(widget=WallpaperSelector(self.data["wallpapers_dir"]), name="wallpapers", left_corner={"height": 420, "width": 120}, right_corner={"height": 420, "width": 120}, on_close=True))
+        self.add_widget(WidgetWrapper(widget=NotificationContainer(server=server, monitor_id=monitor_id), name="notification", left_corner={"height": 78, "width": 60}, right_corner={"height": 78, "width": 60}))
+        self.add_widget(WidgetWrapper(widget=PowerMenu(), name="power", left_corner={"height": 65, "width": 60}, right_corner={"height": 65, "width": 60}))
+        self.add_widget(WidgetWrapper(widget=Dashboard(), name="dashboard", left_corner={"height": 375, "width": 60}, right_corner={"height": 375, "width": 60}, on_close=True, needs_key_events=True))
+        self.add_widget(WidgetWrapper(widget=Colorpicker(monitor_id), name="colorpicker", left_corner={"height": 175, "width": 60}, right_corner={"height": 175, "width": 60}))
+        self.add_widget(WidgetWrapper(widget=ProjectManager(monitor_id), name="projectmanager", left_corner={"height": 220, "width": 120}, right_corner={"height": 220, "width": 120}, needs_key_events=True))
+
+        """
         self.corners = {
             "compact": {
                 "left":
@@ -104,20 +129,8 @@ class Notch(Window):
         self.power = PowerMenu()
         self.colorpicker = Colorpicker(monitor_id)
         self.project_manager = ProjectManager(monitor_id)
+        self.compact = Compact()
 
-        self.compact = Box(
-            name="notch-compact",
-            h_expand=True,
-            v_expand=True,
-            children=[
-                Button(
-                    name="notch-compact-button",
-                    h_expand=True,
-                    v_expand=True,
-                    label=f"{self.data["username"]}@{self.data["hostname"]}",
-                    on_clicked=lambda *_: self.open_notch("dashboard"))
-            ]
-        )
 
         self.stack = Stack(
             name="notch-stack",
@@ -136,6 +149,16 @@ class Notch(Window):
                 self.project_manager,
             ]
         )
+        """
+
+        self.stack = Stack(
+            name="notch-stack",
+            orientation="v",
+            h_expand=True,
+            transition_type="crossfade",
+            transition_duration=250,
+            children=[widget.widget for widget in self.widgets.values()]
+        )
 
         self.notch_box_top = CenterBox(
             name="notch-box-top",
@@ -146,9 +169,21 @@ class Notch(Window):
                 name="corner-notch-left",
                 style_classes=["corner-notch"],
                 place="topleft",
-                height=self.corners["compact"]["left"]["height"], width=self.corners["compact"]["left"]["width"]),
+                height=self.widgets["compact"].corners["left"]["height"],
+                width=self.widgets["compact"].corners["left"]["width"],
+                # height=self.corners["compact"]["left"]["height"],
+                # width=self.corners["compact"]["left"]["width"]
+            ),
             center_children=self.stack,
-            end_children=RoundedAngleEnd(name="corner-notch-right", style_classes=["corner-notch"], place="topright", height=self.corners["compact"]["right"]["height"], width=self.corners["compact"]["right"]["width"])
+            end_children=RoundedAngleEnd(
+                name="corner-notch-right",
+                style_classes=["corner-notch"],
+                place="topright",
+                height=self.widgets["compact"].corners["right"]["height"],
+                width=self.widgets["compact"].corners["right"]["width"],
+                # height=self.corners["compact"]["right"]["height"],
+                # width=self.corners["compact"]["right"]["width"]
+            )
         )
 
         self.notch_box_bottom = Box(name="notch-box-bottom",
@@ -169,10 +204,12 @@ class Notch(Window):
             center_children=self.notch_box_bottom
         )
 
+        self.notch_corner_left = self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0]
+        self.notch_corner_right = self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0]
         self.hidden = False
         self.add(self.notch_box)
         self.show_all()
-        self.wallpapers.viewport.hide()
+        self.widgets["wallpapers"].widget.viewport.hide()
 
         # Conectar evento de teclado
         self.connect("key-press-event", self.on_key_press)
@@ -180,6 +217,10 @@ class Notch(Window):
     def on_key_press(self, widget, event):
         print(event.keyval)
         close = True
+        if self.widgets[self.open_widget].needs_key_events:
+            close = self.widgets[self.open_widget].widget.on_key_press_event(widget, event)
+
+        """
         match self.open_widget:
             case "launcher":
                 close = self.launcher.on_key_press_event(widget, event)
@@ -190,7 +231,7 @@ class Notch(Window):
                 # close = self.wallpapers.on_key_press_event(widget, event)
             case "dashboard":
                 close = self.dashboard.on_key_press_event(widget, event)
-
+        """
         if close and event.keyval == 65307:
             self.close_notch()
 
@@ -214,20 +255,26 @@ class Notch(Window):
             self.notch_box.remove_style_class("hideshow")
             self.notch_box.add_style_class("hidden")
 
-        # print(self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0])
-        # print(self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0])
-        self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0].animate_height(self.corners["compact"]["left"]["height"], 0.5, (0.5, 0.25, 0, 1))
-        self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0].animate_height(self.corners["compact"]["right"]["height"], 0.5, (0.5, 0.25, 0, 1))
+        # self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0].animate_height(self.corners["compact"]["left"]["height"], 0.5, (0.5, 0.25, 0, 1))
+        # self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0].animate_height(self.corners["compact"]["right"]["height"], 0.5, (0.5, 0.25, 0, 1))
+
+        self.notch_corner_left.animate_height(self.widgets["compact"].corners["left"]["height"], 0.5, (0.5, 0.25, 0, 1))  # left notch corner
+        self.notch_corner_right.animate_height(self.widgets["compact"].corners["right"]["height"], 0.5, (0.5, 0.25, 0, 1))  # right notch corner
+
         for widget in self.stack.children:
             widget.remove_style_class("open")
-        for style in ["launcher", "dashboard", "wallpapers", "notification", "power", "compact", "colorpicker", "projectmanager"]:
+        # for style in ["launcher", "dashboard", "wallpapers", "notification", "power", "compact", "colorpicker", "projectmanager"]:
+        for style in self.widgets.keys():
             self.stack.remove_style_class(style)
 
-        self.wallpapers.on_close()
-        self.dashboard.on_close()
+        for widget in self.widgets:
+            if self.widgets[widget].on_close:
+                self.widgets[widget].widget.on_close()
+        # self.wallpapers.on_close()
+        # self.dashboard.on_close()
 
-        self.compact.remove_style_class("hidden")
-        self.stack.set_visible_child(self.compact)
+        self.widgets["compact"].widget.remove_style_class("hidden")
+        self.stack.set_visible_child(self.widgets["compact"].widget)
 
         with open("./data/data.json", "r+") as file:
             self.data = json.load(file)
@@ -254,6 +301,7 @@ class Notch(Window):
             self.notch_box.remove_style_class("hidden")
             self.notch_box.add_style_class("hideshow")
 
+        """
         widgets = {
             "compact": self.compact,
             "launcher": self.launcher,
@@ -264,42 +312,44 @@ class Notch(Window):
             "colorpicker": self.colorpicker,
             "projectmanager": self.project_manager
         }
+        """
 
         # self.compact.add_style_class("hidden")
-        for style in widgets.keys():
+        for style in self.widgets.keys():
             self.stack.remove_style_class(style)
-        for w in widgets.values():
-            w.remove_style_class("open")
+        for w in self.widgets.values():
+            w.widget.remove_style_class("open")
 
         try:
-            self.notch_box.children[0].children[0].children[0].children[0].children[0].children[0].animate_height(self.corners[widget]["left"]["height"], 0.5)
-            self.notch_box.children[0].children[0].children[0].children[0].children[2].children[0].animate_height(self.corners[widget]["right"]["height"], 0.5)
+            self.notch_corner_left.animate_height(self.widgets[widget].corners["left"]["height"], 0.5)
+            self.notch_corner_right.animate_height(self.widgets[widget].corners["right"]["height"], 0.5)
         except KeyError:
             pass
 
         # Configurar según el widget solicitado
-        if widget in widgets:
-            # pass
+        if widget in self.widgets.keys():
+            pass
 
             if widget == "notification":
                 self.set_keyboard_mode("none")
             elif widget == "colorpicker":
                 self.set_keyboard_mode("on_demand")
-                widgets[widget].open()
+                print(self.widgets[widget].widget)
+                self.widgets[widget].widget.open()
             else:
-                widgets[widget].open()
+                self.widgets[widget].widget.open()
                 pass
 
             if widget != "wallpapers":
-                self.wallpapers.viewport.hide()
-                self.wallpapers.viewport.set_property("name", None)
+                self.widgets["wallpapers"].widget.viewport.hide()
+                self.widgets["wallpapers"].widget.viewport.set_property("name", None)
 
             self.stack.add_style_class(widget)
-            self.stack.set_visible_child(widgets[widget])
-            widgets[widget].add_style_class("open")
+            self.stack.set_visible_child(self.widgets[widget].widget)
+            self.widgets[widget].widget.add_style_class("open")
 
         else:
-            self.stack.set_visible_child(self.dashboard)
+            self.stack.set_visible_child(self.widgets["dashboard"].widget)
 
         with open("./data/data.json", "r+") as file:
             self.data = json.load(file)
@@ -314,3 +364,6 @@ class Notch(Window):
             self.notch_box.add_style_class("hidden")
         else:
             self.notch_box.remove_style_class("hidden")
+
+    def add_widget(self, widget_wrapper):
+        self.widgets[widget_wrapper.name] = widget_wrapper
