@@ -16,10 +16,24 @@
     "Proton Experimental",
     "Proton EasyAntiCheat Runtime",
     "Steam Linux Runtime 3.0 (sniper)",
-    "UXTerm"
+    "UXTerm",
+    "Yazi"
   ],
   "app_usage": {
-    "zen browser": 1,
-    "kitty": 1
+    "zen browser": 37,
+    "kitty": 1,
+    "wallpapers": 4,
+    "yazi": 1,
+    "prism launcher": 4,
+    "steam": 7,
+    "nova drift": 3,
+    "obsidian": 8,
+    "dateien": 1,
+    "stremio": 2,
+    "lm-studio": 1,
+    "deep rock galactic": 1,
+    "audacity": 1,
+    "cyberpunk 2077": 5,
+    "android studio": 5
   }
 }
