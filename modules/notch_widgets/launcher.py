@@ -8,7 +8,7 @@ from fabric.utils import get_desktop_applications
 from gi.repository import GLib, Gtk
 
 from rapidfuzz import fuzz
-from modules.launcher_tools import qalculate
+from modules.notch_widgets.launcher_tools import qalculate
 import json
 
 

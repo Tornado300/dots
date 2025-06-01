@@ -3,15 +3,15 @@ from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.stack import Stack
 from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import Gdk
-from modules.launcher import Launcher
-from modules.dashboard.dashboard import Dashboard
-from modules.wallpapers import WallpaperSelector
-from modules.notification_popup import NotificationContainer
-from modules.power import PowerMenu
+from modules.notch_widgets.launcher import Launcher
+from modules.notch_widgets.dashboard.dashboard import Dashboard
+from modules.notch_widgets.wallpapers import WallpaperSelector
+from modules.notch_widgets.notification_popup import NotificationContainer
+from modules.notch_widgets.power import PowerMenu
 from modules.corners import RoundedAngleEnd
-from modules.colorpicker import Colorpicker
-from modules.project_manager import ProjectManager
-from modules.compact import Compact
+from modules.notch_widgets.colorpicker import Colorpicker
+from modules.notch_widgets.project_manager import ProjectManager
+from modules.notch_widgets.compact import Compact
 import json
 
 

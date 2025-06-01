@@ -1,5 +1,5 @@
-from modules.dashboard.audio import AudioModule
-from modules.calendar import Calendar
+from modules.notch_widgets.dashboard.audio import AudioModule
+from modules.notch_widgets.dashboard.calendar import Calendar
 from gi.repository import Gtk, GLib
 from modules.icons import icon
 from fabric.widgets.box import Box
