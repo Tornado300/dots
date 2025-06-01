@@ -1,50 +1,48 @@
-from collections.abc import Iterator
 from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.widgets.entry import Entry
 from fabric.widgets.image import Image
 from fabric.widgets.scrolledwindow import ScrolledWindow
-from fabric.utils import DesktopApp, get_desktop_applications, idle_add, remove_handler
+from fabric.utils import get_desktop_applications
 from gi.repository import GLib, Gtk
 
 from rapidfuzz import fuzz
+from modules.launcher_tools import qalculate
 import json
 
 
-class AppLauncher(Box):
+class Launcher(Box):
     def __init__(self, monitor_id, **kwargs):
         super().__init__(
-            name="app-launcher",
+            name="launcher",
             visible=False,
             all_visible=False,
             **kwargs,
         )
         with open("./data/launcher.json", "r+") as file:
             self.data = json.load(file)
-            if "app_usage" not in self.data:
-                self.data["app_usage"] = {}
-            if "excluded_applications" not in self.data:
-                self.data["excluded_applications"] = []
+            if "entry_usage" not in self.data:
+                self.data["entry_usage"] = {}
+            if "excluded_entrys" not in self.data:
+                self.data["excluded_entrys"] = []
             file.seek(0)
             json.dump(self.data, file, indent=2)
             file.truncate()
 
         self.monitor_id = monitor_id
-        self.custom_entrys = {"Wallpapers": f"fabric-cli exec main-ui 'notch{self.monitor_id}.open_notch(\"wallpapers\")'"}
-        self._arranger_handler: int = 0
-        self._all_apps = get_desktop_applications()
+        self.all_entrys = {}
 
         self.viewport = Box(name="viewport", spacing=4, orientation="v")
         self.search_entry = Entry(
             name="search-entry",
             placeholder="Search Applications...",
             h_expand=True,
-            notify_text=lambda entry, *_: self.arrange_viewport(entry.get_text()),
-            on_activate=lambda entry, *_: self.on_search_entry_activate(entry.get_text()),
+            notify_text=lambda entry, *_: self.update_entrys(entry.get_text()),
             on_button_press_event=self.on_key_press_event,
         )
         self.search_entry.props.xalign = 0.5
+
         self.scrolled_window = ScrolledWindow(
             name="scrolled-window",
             spacing=10,
@@ -74,13 +72,111 @@ class AppLauncher(Box):
         self.add(self.launcher_box)
         self.show_all()
 
+    def extract_app_data(self):
+        result = []
+        for app in list(get_desktop_applications()):
+            result.append({"name": app.display_name, "image": app.get_icon_pixbuf().scale_simple(30, 30, 1), "description": app.description, "app": app})
+        return result
+
+    def norm_entrys(self, entrys):
+        template = {"name": None, "image": None, "description": None, "command": None, "app": None, "dynamic": False}
+        result = []
+        if not isinstance(entrys, list):
+            temp = template.copy()
+            for key in entrys:
+                temp[key] = entrys[key]
+            return temp
+
+        else:
+            for entry in entrys:
+                temp = template.copy()
+                for key in entry:
+                    temp[key] = entry[key]
+                result.append(temp)
+        return result
+
+    def sort_entrys(self, query):
+        with open("./data/launcher.json", "r+") as file:
+            self.data = json.load(file)
+        result = []
+        for entry_list in [self.all_apps, self.all_custom_entrys, self.all_tools]:
+            pairs = []
+            for entry in entry_list:
+                if entry["name"] in self.data["excluded_entrys"]:
+                    continue
+
+                # if entry["dynamic"] and query != "":
+                    # tool_result = globals()[entry["name"]](query)
+                    # entry = self.norm_entrys(tool_result["entry"])
+                    # pairs.append([tool_result["weight"], entry])
+                    # continue
+
+                if entry["name"].casefold() in self.data["entry_usage"]:
+                    weight = (fuzz.WRatio(query.casefold(), entry["name"].casefold()) * 0.7) + (self.data["entry_usage"][entry["name"].casefold()] * 0.3)
+                else:
+                    weight = (fuzz.WRatio(query.casefold(), entry["name"].casefold()) * 0.7)
+
+                if weight >= 40 or query == "":
+                    pairs.append([weight, entry])
+            result.extend(sorted(pairs, key=lambda pair: pair[0], reverse=True))
+        result = [r[1] for r in result]
+        return result
+
+    def add_entrys(self, entrys):
+        for entry in entrys:
+            self.viewport.add(self.bake_entry_slot(entry))
+        if len(self.viewport.children) > 0:
+            self.viewport.children[0].get_style_context().set_state(Gtk.StateFlags.FOCUSED)
+        return True
+
+    def bake_entry_slot(self, entry, **kwargs) -> Button:
+        btn = Button(
+            name="entry-slot-button",
+            child=Box(
+                name="entry-slot-box",
+                orientation="h",
+                spacing=10,
+                children=[
+                    Label(
+                        name="entry-label",
+                        label=entry["name"] or "Unknown",
+                        ellipsization="end",
+                        v_align="center",
+                        h_align="center",
+                    ),
+                ],
+            ),
+            tooltip_text=entry["description"]
+        )
+        if entry["app"] is not None:
+            btn.connect("clicked", lambda *_: (entry["app"].launch(), self.close_launcher(), self.add_usage(entry["name"].casefold())))
+        elif entry["command"] is not None:
+            btn.connect("clicked", lambda *_: (GLib.spawn_command_line_async(entry["command"]), self.add_usage(entry["name"].casefold())))
+
+        if entry["image"] is not None:
+            btn.children[0].children = [Image(name="entry-icon", pixbuf=entry["image"]), btn.children[0].children[0]]
+        return btn
+
+    def update_entrys(self, query: str = ""):
+        self.viewport.children = []
+        self.all_apps = self.norm_entrys(self.extract_app_data())
+        self.all_custom_entrys = self.norm_entrys([
+            {"name": "Wallpapers", "description": "Change wallpaper", "command": f"fabric-cli exec main-ui 'notch{self.monitor_id}.open_notch(\"wallpapers\")'"}
+        ])
+        self.all_tools = self.norm_entrys([
+            {"name": "qalculate", "description": "smart calculator", "dynamic": True}
+        ])
+        sorted_entrys = self.sort_entrys(query)
+        self.add_entrys(sorted_entrys)
+
     def close_launcher(self):
         self.viewport.children = []
         GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.close_notch()'")
 
     def open(self):
-        self._all_apps = get_desktop_applications()
-        self.arrange_viewport()
+        self.viewport.children = []
+        self.selected_entry = 0
+        self.update_entrys()
         self.search_entry.set_text("")
         self.search_entry.grab_focus()
 
@@ -88,118 +184,27 @@ class AppLauncher(Box):
         if event.keyval == 65307:  # Escape key
             self.close_launcher()
         if event.keyval == 65293 and self.search_entry.is_focus():
-            self.viewport.children[self.selected_application].grab_focus()
+            self.viewport.children[self.selected_entry].grab_focus()
         if event.keyval == 106 and event.state == 4:  # ctrl + j key
-            self.selected_application = (self.selected_application + 1) % len(self.viewport.children)
+            self.selected_entry = (self.selected_entry + 1) % len(self.viewport.children)
             self.viewport.children[0].get_style_context().set_state(Gtk.StateFlags.NORMAL)
-            self.viewport.children[self.selected_application].grab_focus()
+            self.viewport.children[self.selected_entry].grab_focus()
         if event.keyval == 107 and event.state == 4:  # ctrl + k key
-            self.selected_application = (self.selected_application - 1) % len(self.viewport.children)
+            self.selected_entry = (self.selected_entry - 1) % len(self.viewport.children)
             self.viewport.children[0].get_style_context().set_state(Gtk.StateFlags.NORMAL)
-            self.viewport.children[self.selected_application].grab_focus()
+            self.viewport.children[self.selected_entry].grab_focus()
         if event.keyval == 108 and event.state == 4:  # ctrl + l key
             self.search_entry.grab_focus()
             self.viewport.children[0].get_style_context().set_state(Gtk.StateFlags.FOCUSED)
-        return True
+            return True
 
-    def arrange_viewport(self, query: str = ""):
-        remove_handler(self._arranger_handler) if self._arranger_handler else None
-        self.viewport.children = []
-        self.selected_application = 0
-        if query.startswith(":"):
-            filtered_apps_iter = iter(self.custom_entrys)
-        else:
-            filtered_apps_iter = self.sort_applications(query)
-
-        self._arranger_handler = idle_add(
-            lambda *args: self.add_next_application(*args) or False, filtered_apps_iter, pin=True,
-        )
-
-        return False
-
-    def add_next_application(self, apps_iter: Iterator[DesktopApp]):
-        if not (app := next(apps_iter, None)):
-            return False
-        self.viewport.add(self.bake_application_slot(app))
-        self.viewport.children[0].get_style_context().set_state(Gtk.StateFlags.FOCUSED)
-        return True
-
-    def bake_application_slot(self, app: DesktopApp | dict, **kwargs) -> Button:
-        if isinstance(app, str):
-            return Button(
-                name="app-slot-button",
-                child=Box(
-                    name="app-slot-box",
-                    orientation="h",
-                    spacing=10,
-                    children=[
-                        Label(
-                            name="app-label",
-                            label=app,
-                            ellipsization="end",
-                            v_align="center",
-                            h_align="center",
-                        ),
-                    ],
-                ),
-                on_clicked=lambda *_: (GLib.spawn_command_line_async(self.custom_entrys[app]), self.add_usage(app.casefold())),
-            )
-        else:
-            return Button(
-                name="app-slot-button",
-                child=Box(
-                    name="app-slot-box",
-                    orientation="h",
-                    spacing=10,
-                    children=[
-                        Image(name="app-icon", pixbuf=app.get_icon_pixbuf().scale_simple(30, 30, 1)),
-                        Label(
-                            name="app-label",
-                            label=app.display_name or "Unknown",
-                            ellipsization="end",
-                            v_align="center",
-                            h_align="center",
-                        ),
-                    ],
-                ),
-                tooltip_text=app.description,
-                on_clicked=lambda *_: (app.launch(), self.close_launcher(), self.add_usage(app.display_name.casefold())),
-                **kwargs,
-            )
-
-    def on_search_entry_activate(self, text):
-        if text == ":wp":
-            GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.open_notch(\"wallpapers\")'")
-
-    def sort_applications(self, query):
-        with open("./data/launcher.json", "r+") as file:
-            self.data = json.load(file)
-        pairs = []
-        for app in self._all_apps:
-            if app.display_name in self.data["excluded_applications"]:
-                continue
-            if isinstance(app, DesktopApp):
-                if app.display_name.casefold() in self.data["app_usage"]:
-                    pairs.append([(fuzz.WRatio(query.casefold(), app.display_name.casefold()) * 0.7) + (self.data["app_usage"][app.display_name.casefold()] * 0.3), app])
-                else:
-                    pairs.append([(fuzz.WRatio(query.casefold(), app.display_name.casefold()) * 0.7), app])
-            else:
-                if app.casefold() in self.data["app_usage"]:
-                    pairs.append([(fuzz.WRatio(query.casefold(), app.casefold()) * 0.7) + (self.data["app_usage"][app.casefold()] * 0.3), app])
-                else:
-                    pairs.append([(fuzz.WRatio(query.casefold(), app.casefold()) * 0.7), app])
-
-        result = sorted(pairs, key=lambda pair: pair[0], reverse=True)
-        result = [r[1] for r in result]
-        return iter(result)
-
-    def add_usage(_, app_name):
+    def add_usage(self, entry_name):
         with open("./data/launcher.json", "r+") as file:
             data = json.load(file)
-            if app_name in data["app_usage"]:
-                data["app_usage"][app_name] += 1
+            if entry_name in data["entry_usage"]:
+                data["entry_usage"][entry_name] += 1
             else:
-                data["app_usage"][app_name] = 1
-            file.seek(0)
-            json.dump(data, file, indent=2)
-            file.truncate()
+                data["entry_usage"][entry_name] = 1
+                file.seek(0)
+                json.dump(data, file, indent=2)
+                file.truncate()

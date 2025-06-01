@@ -3,7 +3,7 @@ from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.stack import Stack
 from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import Gdk
-from modules.launcher import AppLauncher
+from modules.launcher import Launcher
 from modules.dashboard.dashboard import Dashboard
 from modules.wallpapers import WallpaperSelector
 from modules.notification_popup import NotificationContainer
@@ -54,7 +54,7 @@ class Notch(Window):
         self.floating_notification = NotificationContainer(server=server, monitor_id=monitor_id, h_expand=False)
 
         self.add_widget(WidgetWrapper(widget=Compact(), name="compact", left_corner={"height": 39, "width": 60}, right_corner={"height": 39, "width": 60}))
-        self.add_widget(WidgetWrapper(widget=AppLauncher(monitor_id), name="launcher", left_corner={"height": 220, "width": 120}, right_corner={"height": 220, "width": 120}, needs_key_events=True))
+        self.add_widget(WidgetWrapper(widget=Launcher(monitor_id), name="launcher", left_corner={"height": 220, "width": 120}, right_corner={"height": 220, "width": 120}, needs_key_events=True))
         self.add_widget(WidgetWrapper(widget=WallpaperSelector(self.data["wallpapers_dir"]), name="wallpapers", left_corner={"height": 420, "width": 120}, right_corner={"height": 420, "width": 120}, on_close=True))
         self.add_widget(WidgetWrapper(widget=NotificationContainer(server=server, monitor_id=monitor_id), name="notification", left_corner={"height": 78, "width": 60}, right_corner={"height": 78, "width": 60}))
         self.add_widget(WidgetWrapper(widget=PowerMenu(), name="power", left_corner={"height": 65, "width": 60}, right_corner={"height": 65, "width": 60}))
