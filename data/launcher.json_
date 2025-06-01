@@ -1,4 +1,5 @@
-{"excluded_applications": [
+{
+  "excluded_applications": [
     "Hardware Locality lstopo",
     "Qt Linguist",
     "Qt Assistant",
@@ -15,6 +16,24 @@
     "Proton Experimental",
     "Proton EasyAntiCheat Runtime",
     "Steam Linux Runtime 3.0 (sniper)",
-    "UXTerm"
-  ]
+    "UXTerm",
+    "Yazi"
+  ],
+  "entry_usage": {
+    "zen browser": 46,
+    "kitty": 1,
+    "wallpapers": 8,
+    "yazi": 1,
+    "prism launcher": 4,
+    "steam": 12,
+    "nova drift": 3,
+    "obsidian": 11,
+    "dateien": 2,
+    "stremio": 4,
+    "lm-studio": 1,
+    "deep rock galactic": 1,
+    "audacity": 1,
+    "cyberpunk 2077": 5,
+    "android studio": 5
+  }
 }
