@@ -11,11 +11,12 @@
 @import "/home/tornado300/.config/fabric/styles/dropdown.sass";
 @import "/home/tornado300/.config/fabric/styles/colorpicker.sass";
 @import "/home/tornado300/.config/fabric/styles/projectmanager.sass";
+@import "/home/tornado300/.config/fabric/styles/compact.sass";
 
 
 * {
     all: unset;
-    color: @light_text;
+    /* color: @light_text; */
     font-family: "Zed Sans";
 }
 
