@@ -59,7 +59,7 @@ class Notch(Window):
         self.add_widget(WidgetWrapper(widget=NotificationContainer(server=server, monitor_id=monitor_id), name="notification", left_corner={"height": 78, "width": 60}, right_corner={"height": 78, "width": 60}))
         self.add_widget(WidgetWrapper(widget=PowerMenu(), name="power", left_corner={"height": 65, "width": 60}, right_corner={"height": 65, "width": 60}))
         self.add_widget(WidgetWrapper(widget=Dashboard(), name="dashboard", left_corner={"height": 375, "width": 60}, right_corner={"height": 375, "width": 60}, on_close=True, needs_key_events=True))
-        self.add_widget(WidgetWrapper(widget=Colorpicker(monitor_id), name="colorpicker", left_corner={"height": 175, "width": 60}, right_corner={"height": 175, "width": 60}))
+        self.add_widget(WidgetWrapper(widget=Colorpicker(monitor_id), name="colorpicker", left_corner={"height": 175, "width": 60}, right_corner={"height": 175, "width": 60}, on_close=True))
         self.add_widget(WidgetWrapper(widget=ProjectManager(monitor_id), name="projectmanager", left_corner={"height": 220, "width": 120}, right_corner={"height": 220, "width": 120}, needs_key_events=True))
 
         self.stack = Stack(
@@ -143,7 +143,6 @@ class Notch(Window):
         self.floating_notification.remove_style_class("open")
         self.notch_box_bottom.remove_style_class("open")
         self.set_keyboard_mode("none")
-        self.open_widget = None
 
         if self.hidden:
             self.notch_box.remove_style_class("hideshow")
@@ -158,12 +157,13 @@ class Notch(Window):
             self.stack.remove_style_class(style)
 
         for widget in self.widgets:
-            if self.widgets[widget].on_close:
+            if self.widgets[widget].on_close and widget == self.open_widget:
                 self.widgets[widget].widget.on_close()
 
         self.widgets["compact"].widget.remove_style_class("hidden")
         self.stack.set_visible_child(self.widgets["compact"].widget)
 
+        self.open_widget = None
         with open("./data/data.json", "r+") as file:
             self.data = json.load(file)
             self.data["notch_status" + str(self.monitor_id)] = "closed"
@@ -207,7 +207,6 @@ class Notch(Window):
                 self.set_keyboard_mode("none")
             elif widget == "colorpicker":
                 self.set_keyboard_mode("on_demand")
-                print(self.widgets[widget].widget)
                 self.widgets[widget].widget.open()
             else:
                 self.widgets[widget].widget.open()

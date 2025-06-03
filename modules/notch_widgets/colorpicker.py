@@ -54,6 +54,9 @@ class Colorpicker(Box):
 
     def exec_hyprpicker(self):
         time.sleep(0.3)
+        r = None
+        g = None
+        b = None
         self.process = subprocess.Popen(
             'hyprpicker -n -f rgb | grep -E "[0-9]{1,3} [0-9]{1,3} [0-9]{1,3}"',
             shell=True,
@@ -66,14 +69,15 @@ class Colorpicker(Box):
         for line in self.process.stdout:
             r, g, b = line.split(" ")
 
-        self.rgb = f"{r},{g},{b}".replace("\n", "")
-        self.hex = f"#{int(r):02x}{int(g):02x}{int(b):02x}"
-        h, s, v = colorsys.rgb_to_hsv(int(r) / 255, int(g) / 255, int(b) / 255)
-        self.hsv = (round(h * 360, 3), round(s * 100, 2), round(v * 100, 2))
+        if r and g and b:
+            self.rgb = f"{r},{g},{b}".replace("\n", "")
+            self.hex = f"#{int(r):02x}{int(g):02x}{int(b):02x}"
+            h, s, v = colorsys.rgb_to_hsv(int(r) / 255, int(g) / 255, int(b) / 255)
+            self.hsv = (round(h * 360, 3), round(s * 100, 2), round(v * 100, 2))
 
-        self.hex_box.children[1].set_label(str(self.hex))
-        self.rgb_box.children[1].set_label(str(self.rgb))
-        self.hsv_box.children[1].set_label(str(self.hsv))
+            self.hex_box.children[1].set_label(str(self.hex))
+            self.rgb_box.children[1].set_label(str(self.rgb))
+            self.hsv_box.children[1].set_label(str(self.hsv))
 
     def open(self):
         self.hex_box.children[1].set_label("")
@@ -83,3 +87,6 @@ class Colorpicker(Box):
         picker_thread = threading.Thread(target=self.exec_hyprpicker)
 
         picker_thread.start()
+
+    def on_close(self):
+        subprocess.Popen(["pkill", "hyprpicker"])
