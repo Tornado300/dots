@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="Module1" script:language="StarBasic">Sub MeasureDistance
+    Dim oDoc       As Object
+    Dim oSel       As Object
+    Dim oShape1    As Object
+    Dim oShape2    As Object
+    Dim x1 As Long, y1 As Long
+    Dim x2 As Long, y2 As Long
+    Dim dx As Double, dy As Double, dist As Double
+    Dim unitFactor As Double
+    Dim msg As String
+
+    oDoc = ThisComponent
+    oSel = oDoc.CurrentSelection
+
+    &apos; Make sure exactly two shapes are selected
+    If Not oSel.supportsService(&quot;com.sun.star.drawing.ShapeCollection&quot;) Then
+        MsgBox &quot;Please select exactly two shapes.&quot;, 16, &quot;Error&quot;
+        Exit Sub
+    End If
+
+    If oSel.Count &lt;&gt; 2 Then
+        MsgBox &quot;Please select exactly two shapes.&quot;, 16, &quot;Error&quot;
+        Exit Sub
+    End If
+
+    &apos; Get each shape’s position
+    oShape1 = oSel.getByIndex(0)
+    oShape2 = oSel.getByIndex(1)
+
+    x1 = oShape1.PositionX
+    y1 = oShape1.PositionY
+    x2 = oShape2.PositionX
+    y2 = oShape2.PositionY
+
+    &apos; Compute offsets (in 1/100 mm units)
+    dx = Abs(x1 - x2)
+    dy = Abs(y1 - y2)
+    dist = Sqr(dx*dx + dy*dy)
+
+    &apos; Convert from 1/100 mm → mm (divide by 100)
+    unitFactor = 0.01
+    dx = dx * unitFactor
+    dy = dy * unitFactor
+    dist = dist * unitFactor
+
+    msg = &quot;Horizontal: &quot; &amp; Format(dx, &quot;0.00&quot;) &amp; &quot; mm&quot; &amp; Chr$(10) &amp; _
+          &quot;Vertical:   &quot; &amp; Format(dy, &quot;0.00&quot;) &amp; &quot; mm&quot; &amp; Chr$(10) &amp; _
+          &quot;Distance:   &quot; &amp; Format(dist, &quot;0.00&quot;) &amp; &quot; mm&quot;
+    MsgBox msg, 64, &quot;Shape-to-Shape Distance&quot;
+End Sub
+
+</script:module>

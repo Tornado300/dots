@@ -1,0 +1,83 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "secondary_prompt": {
+    "template": "❯❯ ",
+    "foreground": "#FF00AA",
+    "background": "transparent"
+  },
+  "transient_prompt": {
+    "template": "\uf444<#FF00AA>❯</>",
+    "background": "transparent",
+    "foreground_templates": [
+      "{{if gt .Code 0}}#FF0000{{end}}",
+      "{{if eq .Code 0}}#00FF00{{end}}"
+    ]
+  },
+  "console_title_template": "{{ .Shell }} in {{ .Folder }}",
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "properties": {
+            "cache_duration": "none",
+            "style": "full"
+          },
+          "template": "{{ .Path }}",
+          "foreground": "#dcb6ff",
+          "background": "transparent",
+          "type": "path",
+          "style": "plain"
+        }
+      ],
+      "newline": true
+    },
+    {
+      "type": "rprompt",
+      "overflow": "hidden",
+      "segments": [
+        {
+          "properties": {
+            "cache_duration": "none",
+            "home_enabled": true
+          },
+          "template": " [{{ .Venv }}/{{ .Full }}] ",
+          "foreground": "#403e53",
+          "background": "transparent",
+          "type": "python",
+          "style": "plain"
+        },
+        {
+          "properties": {
+            "cache_duration": "none",
+            "threshold": 5000
+          },
+          "template": "{{ .FormattedMs }}",
+          "foreground": "yellow",
+          "background": "transparent",
+          "type": "executiontime",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "properties": {
+            "cache_duration": "none"
+          },
+          "template": "❯",
+          "foreground": "#FF00AA",
+          "background": "transparent",
+          "type": "text",
+          "style": "plain"
+        }
+      ],
+      "newline": true
+    }
+  ],
+  "version": 3
+}

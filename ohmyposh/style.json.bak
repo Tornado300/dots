@@ -1,0 +1,74 @@
+{
+  "console_title_template": "{{ .Shell }} in {{ .Folder }}",
+  "final_space": false,
+  "version": 2,
+  "blocks": [
+    {
+      "alignment": "left",
+      "newline": true,
+      "type": "prompt",
+      "segments": [
+        {
+          "background": "transparent",
+          "foreground": "#dcb6ff",
+          "style": "plain",
+          "template": "{{ .Path }}",
+          "type": "path",
+          "properties": {
+            "style": "full"
+          }
+        }
+      ]
+    },
+    {
+      "overflow": "hidden",
+      "type": "rprompt",
+      "segments": [
+        {
+          "type": "python",
+          "style": "plain",
+          "foreground": "#403e53",
+          "background": "transparent",
+          "template": " [{{ .Venv }}/{{ .Full }}] "
+        },
+        {
+          "background": "transparent",
+          "foreground": "yellow",
+          "style": "plain",
+          "template": "{{ .FormattedMs }}",
+          "type": "executiontime",
+          "properties": {
+            "threshold": 5000
+          }
+        }
+      ]
+    },
+    {
+      "alignment": "left",
+      "newline": true,
+      "type": "prompt",
+      "segments": [
+        {
+          "background": "transparent",
+          "foreground": "#FF00AA",
+          "style": "plain",
+          "template": "❯",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "secondary_prompt": {
+    "background": "transparent",
+    "foreground": "#FF00AA",
+    "template": "❯❯ "
+  },
+  "transient_prompt": {
+    "background": "transparent",
+    "foreground_templates": [
+      "{{if gt .Code 0}}#FF0000{{end}}",
+      "{{if eq .Code 0}}#00FF00{{end}}"
+    ],
+    "template": "<#FF00AA>❯</>"
+  }
+}
