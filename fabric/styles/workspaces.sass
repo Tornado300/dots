@@ -1,0 +1,40 @@
+#workspaces {
+    padding: 0px;
+    margin: 0px;
+    border-radius: 0px;
+    background-color: @dark_background;
+}
+
+
+
+#workspaces>button {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    padding-left: 11px;
+    padding-right: 11px;
+    min-width: 10px;
+    min-height: 10px;
+    border-radius: 16px;
+    transition: all 0.25s cubic-bezier(.5, .25, 0, 1);
+    background-color: @dark_surface;
+}
+
+#workspaces>button>label {
+    font-size: 10pt;
+}
+
+#workspaces>button.empty:hover {
+    background-color: @primary;
+}
+
+#workspaces>button.urgent {
+    background-color: @error_dim;
+}
+
+#workspaces>button.active {
+    background-color: @highlight;
+}
+
+#workspaces>button.empty {
+    background-color: alpha(@primary, 0.25);
+}

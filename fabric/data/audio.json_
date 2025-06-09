@@ -1,0 +1,18 @@
+{"device_name_mapping": {
+    "speakers": {
+      "alsa_output.usb-Razer_Razer_Kraken_Ultimate_00000000-00.analog-stereo": "Headset",
+      "alsa_output.pci-0000_00_1f.3.analog-stereo": "Boxen"
+    },
+    "microphones": {
+      "alsa_input.usb-ICT-TEK_Realtek_USB_MIC-00.mono-fallback": "Webcam",
+      "alsa_input.usb-Razer_Razer_Kraken_Ultimate_00000000-00.analog-stereo": "Headset",
+      "alsa_input.pci-0000_00_1f.3.analog-stereo": "alsa_input.pci-0000_00_1f.3.analog-stereo"
+    }
+  },
+  "excluded_devices": {
+    "speakers": [],
+    "microphones": [
+      "alsa_input.pci-0000_00_1f.3.analog-stereo"
+    ]
+  }
+}

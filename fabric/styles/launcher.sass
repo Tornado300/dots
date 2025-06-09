@@ -1,0 +1,82 @@
+#search-entry {
+  font-weight: bold;
+  background-color: @dark_surface;
+  color: @light_text;
+  border-radius: 16px;
+  padding: 10px;
+  margin-top: 7px;
+  margin-left: 7px;
+  margin-right: 7px;
+}
+
+#search-entry selection {
+  color: @dark_text;
+  background-color: @light_background;
+}
+
+
+#scrolled-window {
+  border-radius: 16px;
+}
+
+#scrolled-window scrollbar {
+  border-radius: 10px;
+  background-color: @transparent;
+  padding: 4px;
+  margin-left: 6px;
+}
+
+#scrolled-window slider {
+  border-radius: 8px;
+  min-width: 8px;
+  min-height: 48px;
+  background-color: @light_surface;
+}
+
+#entry-slot-button {
+  border-radius: 16px;
+  padding: 8px;
+  transition: padding 0.25s cubic-bezier(0.5, 0.25, 0, 1);
+  animation: loadSlot 0.5s ease;
+}
+
+@keyframes loadSlot {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#entry-slot-button:hover,
+#entry-slot-button:focus {
+  background-color: @highlight;
+  padding-left: 24px;
+}
+
+#entry-slot-button:active {
+  background-color: #ffffff;
+}
+
+#entry-icon {
+  margin-right: 8px;
+}
+
+#entry-label {
+  color: @light_text;
+  font-weight: bold;
+}
+
+#entry-slot-button:hover #app-label,
+#entry-slot-button:focus #app-label {
+  color: @light_text;
+}
+
+#entry-slot-button:active #app-label {
+  color: @dark_text;
+}
+
+#launcher {
+  background-color: @dark_background;
+}

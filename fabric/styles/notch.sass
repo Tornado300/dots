@@ -1,0 +1,121 @@
+#notch-box {
+  margin: 10px;
+  margin-top: 0px;
+  transition: all 0.5s cubic-bezier(0.5, 0.25, 0, 1);
+}
+
+#notch-box.hidden {
+  opacity: 0;
+}
+
+#notch-box.hideshow {
+  opacity: 1;
+  margin-top: 40px;
+}
+
+#notch-stack {
+  background-color: @transparent;
+  min-height: 0px;
+  min-width: 256px;
+  border-radius: 0px;
+  transition: all 0.5s cubic-bezier(0.5, 0.25, 0, 1);
+}
+
+#notch-stack.launcher {
+  padding: 0px;
+  min-height: 220px;
+  min-width: 480px;
+  border-radius: 0px;
+  background-color: @transparent;
+}
+
+#notch-stack.dashboard {
+  padding: 0px;
+  min-height: 375px;
+  min-width: 820px;
+  border-radius: 0px;
+}
+
+#notch-stack.wallpapers {
+  padding: 0px;
+  min-height: 420px;
+  min-width: 620px;
+  border-radius: 0px;
+}
+
+#notch-stack.notification {
+  padding: 0px;
+  min-height: 45px;
+  min-width: 360px;
+  border-radius: 0px;
+}
+
+#notch-stack.power {
+  min-width: 0px;
+  border-radius: 0px;
+}
+
+#notch-stack.projectmanager {
+  padding: 0px;
+  min-height: 220px;
+  min-width: 480px;
+  border-radius: 0px;
+  background-color: @transparent;
+}
+
+
+#launcher,
+#project-manager,
+#dashboard,
+#wallpapers,
+#notification,
+#colorpicker,
+#power-menu {
+  opacity: 1;
+  margin: -800px;
+  transition: all 0.25s cubic-bezier(0.5, 0.25, 0, 1);
+}
+
+#launcher.open,
+#project-manager.open,
+#dashboard.open,
+#wallpapers.open,
+#wallpapers-viewport.open,
+#notification.open,
+#colorpicker.open,
+#power-menu.open {
+  opacity: 1;
+  margin: 0px;
+}
+
+#notch-compact {
+  border-radius: 0 0 0px 0px;
+  transition: all 0.25s cubic-bezier(0.5, 0.25, 0, 1);
+  background-color: @dark_background;
+  }
+
+#notch-compact-button {
+  font-weight: bold;
+  padding-top: 12px;
+  padding-bottom: 8px;
+  background-color: @transparent;
+}
+
+.corner-notch {
+    background-color: @dark_background;
+    border-radius: 0px;
+}
+
+
+
+#notch-box-bottom.open {
+  min-height: 090px;
+}
+
+#notch-box-bottom #notification-box {
+  opacity: 1;
+  margin: 0px;
+  border-radius: 20px;
+  min-width: 350px;
+  margin-top: 8px;
+}

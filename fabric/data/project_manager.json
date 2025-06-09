@@ -1,0 +1,17 @@
+{
+  "project_usage": {
+    "zombie game": 1,
+    "mc syntax": 6,
+    "haco app": 2,
+    "fabric": 13
+  },
+  "projects": {
+    "fabric": "~/.config/fabric/",
+    "flowmaschine": "~/Desktop/programing/python/flowmachine/",
+    "math card game": "~/Desktop/programing/python/math_card_game/",
+    "hypr": "~/.config/hypr/",
+    "mc syntax": "~/.local/share/nvim/lazy/vim-mcfunction/syntax/mcfunction/",
+    "zombie game": "~/.local/share/PrismLauncher/instances/1.21.5/minecraft/saves/Monster/",
+    "haco app": "~/Desktop/Git_repos/Nils/haco-app/"
+  }
+}

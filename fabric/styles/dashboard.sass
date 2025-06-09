@@ -1,0 +1,174 @@
+#switcher.stack-switcher > * {
+  background-color: @dark_background;
+  padding: 4px;
+  border-radius: 20px;
+  transition: all 0.1s ease;
+}
+
+#switcher.stack-switcher > *:checked {
+  background-color: var(--surface);
+}
+
+#switcher.stack-switcher > *:active,
+#switcher.stack-switcher > *:hover {
+  background-color: var(--surface-bright);
+}
+
+#switcher.stack-switcher > *:focus {
+  background-color: var(--surface-bright);
+}
+
+#switcher.stack-switcher button label {
+  font-weight: bold;
+}
+
+#switcher.stack-switcher > *:checked label {
+  color: var(--primary);
+}
+
+
+#dashboard-segment-system {
+  min-width: 200px;
+  background-color: #0000ff;
+  border-radius: 10px;
+}
+
+
+#dashboard-segment-bluetooth {
+  background-color: #ff00ff;
+  border-radius: 10px;
+}
+
+#dashboard-segment-wifi {
+  background-color: #ffff00;
+  border-radius: 10px;
+}
+
+#dashboard-segment-quickbuttons {
+  min-height: 50px;
+  background-color: @dark_surface;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.dashboard-quickbutton {
+  background-color: @dark_subsurface_light;
+  border-radius: 35px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.dashboard-quickbutton:hover {
+  background-color: @inverted_highlight;
+}
+.dashboard-quickbutton:active {
+  background-color: #ffffff;
+}
+
+
+#dashboard-segment-audio {
+  background-color: @dark_surface;
+  border-radius: 10px;
+}
+
+#dashboard-audio-input-box, #dashboard-audio-output-box {
+  border-radius: 8px;
+}
+
+
+#dashboard-segment-audio.selected, #dashboard-audio-input-box.selected, #dashboard-audio-output-box.selected {
+  border-style: solid;
+  border-width: 2px;
+  border-color: @dashboard_selected;
+}
+
+#dashboard {
+  background-color: @dark_background;
+}
+
+
+#dashboard-container-top {
+  padding-bottom: 5px;
+  min-height: 100px;
+}
+
+#dashboard-container-bottom {
+  padding-top: 5px;
+  padding-bottom: 10px;
+  background-color: @transparent;
+}
+
+
+#dashboard-audio-input-slider trough{
+  background-color: @dark_surface;
+  min-height: 7px;
+  border-radius: 100px;
+}
+
+
+#dashboard-audio-input-slider trough highlight{
+  background-color: @audio_slider_highlight;
+  border-radius: 100px;
+}
+
+
+#dashboard-audio-input-slider slider {
+  background-color: @audio_slider_knob;
+  min-width: 15px;
+  min-height: 13px;
+  border-radius: 100px;
+  margin: -5px;
+}
+
+#dashboard-audio-input-dropdown #element-list #element:focus {
+  background-color: @highlight; 
+}
+
+
+#dashboard-audio-output-dropdown #element-list #element:focus {
+  background-color: @highlight; 
+}
+
+
+.audio-slider trough{
+  background-color: @dark_surface;
+  min-height: 7px;
+  border-radius: 100px;
+}
+
+
+.audio-slider trough highlight{
+  background-color: @audio_slider_highlight;
+  border-radius: 100px;
+}
+
+
+.audio-slider slider {
+  background-color: @audio_slider_knob;
+  min-width: 11px;
+  min-height: 11px;
+  border-radius: 100px;
+  margin: -5px;
+}
+
+
+.audio-slider value {
+  padding-left: 7px;
+  padding-right: 1px;
+  margin-left: 8px;
+}
+
+.audio-slider {
+  background-color: @dark_subsurface_light;
+  border-radius: 20px;
+  margin-left: 5px;
+  margin-right: 5px;
+  padding-left: 6px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
