@@ -1,6 +1,7 @@
+from widgets.gradient_button import GradientButton
 import json
 from fabric.widgets.box import Box
-from fabric.widgets.button import Button
+# from fabric.widgets.button import Button
 from gi.repository import GLib
 from services.mpris import MprisPlayer, MprisPlayerManager
 import gi
@@ -37,7 +38,7 @@ class Compact(Box):
                 h_expand=True,
                 v_expand=True,
                 children=[
-                    Button(
+                    GradientButton(
                         name="compact-button",
                         h_expand=True,
                         v_expand=True,
@@ -53,8 +54,10 @@ class Compact(Box):
                 h_expand=True,
                 v_expand=True,
                 children=[
-                    Button(
+                    GradientButton(
                         name="compact-button",
+                        color_points=[(0, 0, 0, 0, 0), (0.2, 0, 1, 0, 0), (0.8, 0, 1, 0, 0), (1, 0, 1, 0, 0)],
+                        gradient_type="linear",
                         h_expand=True,
                         v_expand=True,
                         label=f"{self.title} - {self.artist}",
