@@ -1,0 +1,9 @@
+header.glass-header {
+	height: 35px;
+	border: none;
+}
+
+header.glass-header > div:first-child > div > button, .glass-header > div:first-child > div {
+	font-size: 10px;
+	filter: brightness(0.8);
+}

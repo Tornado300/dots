@@ -1,0 +1,27 @@
+# Set the Mod key (Mod4 = Super/Windows key)
+set $mod Mod4
+
+# Launch terminal
+bindsym $mod+Return exec kitty
+
+# Kill focused window
+bindsym $mod+Shift+q kill
+
+# Start dmenu
+bindsym $mod+d exec dmenu_run
+
+# Reload and restart
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+
+# Exit sway
+bindsym $mod+Shift+e exit
+
+# Set default workspace layout
+workspace_layout tabbed
+
+# Status bar
+bar {
+    status_command waybar
+}
+

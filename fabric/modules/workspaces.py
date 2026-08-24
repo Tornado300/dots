@@ -1,4 +1,4 @@
-from fabric.hyprland.widgets import Workspaces as OWorkspaces
+from fabric.hyprland.widgets import HyprlandWorkspaces as OWorkspaces
 
 
 class Workspaces(OWorkspaces):
@@ -16,7 +16,7 @@ class Workspaces(OWorkspaces):
             buttons_factory=buttons_factory,
             invert_scroll=invert_scroll,
             empty_scroll=empty_scroll,
-            **kwargs
+            **kwargs,
         )
         self.workspace_range = workspace_range
 
@@ -25,14 +25,25 @@ class Workspaces(OWorkspaces):
             return
 
         active_workspace = int(event.data[0])
+        print(
+            active_workspace,
+            self._active_workspace,
+            self.workspace_range,
+            self._buttons,
+        )
         if active_workspace == self._active_workspace:
             return
-        if active_workspace < self.workspace_range[0] or active_workspace > self.workspace_range[1]:
+        if (
+            active_workspace < self.workspace_range[0]
+            or active_workspace > self.workspace_range[1]
+        ):
             return
 
+        print(self._buttons.get(self._active_workspace))
         if self._active_workspace is not None and (
             old_btn := self._buttons.get(self._active_workspace)
         ):
+            print(old_btn)
             old_btn.active = False
         self._active_workspace = active_workspace
         if not (btn := self.lookup_or_bake_button(active_workspace)):
@@ -40,11 +51,13 @@ class Workspaces(OWorkspaces):
 
         btn.urgent = False
         btn.active = True
-
         if btn in self._container.children:
             return
         return self.insert_button(btn)
 
     def activate_workspace(self, id):
-        self.lookup_or_bake_button(id).active = True
-        self._active_workspace = id
+        if btn := self.lookup_or_bake_button(id):
+            btn.active = True
+            self._active_workspace = id
+        else:
+            print("BUTTON NOT FOUND: ", id)

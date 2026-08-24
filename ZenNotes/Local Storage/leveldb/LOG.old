@@ -1,0 +1,8 @@
+2026/08/04-21:15:02.426 479c Reusing MANIFEST /home/tornado300/.config/ZenNotes/Local Storage/leveldb/MANIFEST-000001
+2026/08/04-21:15:02.427 479c Recovering log #13
+2026/08/04-21:15:02.427 479c Level-0 table #16: started
+2026/08/04-21:15:02.428 479c Level-0 table #16: 9778 bytes OK
+2026/08/04-21:15:02.428 479c Recovering log #16
+2026/08/04-21:15:02.428 479c Reusing old log /home/tornado300/.config/ZenNotes/Local Storage/leveldb/000016.log 
+2026/08/04-21:15:02.429 479c Delete type=2 #17
+2026/08/04-21:15:02.429 479c Delete type=0 #13

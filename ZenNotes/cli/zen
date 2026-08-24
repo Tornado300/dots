@@ -1,0 +1,3 @@
+#!/bin/sh
+# Auto-generated dev wrapper for the ZenNotes CLI.
+ELECTRON_RUN_AS_NODE=1 exec "/opt/zennotes-bin/ZenNotes" "/opt/zennotes-bin/resources/app.asar/out/main/cli.js" "$@"

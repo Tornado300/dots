@@ -9,18 +9,24 @@ import json
 from gi.repository import Gray
 import setproctitle
 import gi
-gi.require_version('Gray', '0.1')
+
+gi.require_version("Gray", "0.1")
 
 
 if __name__ == "__main__":
-
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     with open("./data/data.json", "r") as file:
         try:
             data = json.load(file)
         except json.decoder.JSONDecodeError:
-            data = {"username": None, "hostname": None, "home_dir": None, "wallpapers_dir": None, "cache_dir": None}
+            data = {
+                "username": None,
+                "hostname": None,
+                "home_dir": None,
+                "wallpapers_dir": None,
+                "cache_dir": None,
+            }
 
     with open("./data/project_manager.json") as file:
         try:
@@ -66,6 +72,8 @@ if __name__ == "__main__":
     notch0 = Notch(monitor_id=0, server=notification_server)
     notch1 = Notch(monitor_id=1, server=notification_server)
     controller = Controller()
-    app = Application("main-ui", bar0, bar1, notch0, notch1, controller, open_inspector=True)
+    app = Application(
+        "main-ui", bar0, bar1, notch0, notch1, controller, open_inspector=False
+    )
     app.set_stylesheet_from_file(get_relative_path("main.css"))
     app.run()

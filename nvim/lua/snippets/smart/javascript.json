@@ -1,0 +1,21 @@
+{
+  "JSDoc params": {
+    "trigger": "/**",
+    "kind": "treesitter",
+    "direction": "below",
+    "node_types": [
+      "function_declaration",
+      "function_signature",
+      "method_definition",
+      "arrow_function",
+      "function_expression",
+      "generator_function_declaration"
+    ],
+    "field": "parameters",
+    "item_field": "pattern",
+    "header": ["/**"],
+    "line_template": " * @param {${1:type}} {{name}}",
+    "footer": [" */"],
+    "empty_message": "No function found below — type manually"
+  }
+}

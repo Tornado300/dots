@@ -1,0 +1,37 @@
+/*assets button*/
+.glass-sidebar > div:nth-child(3) > div:first-child > div:nth-child(6) > div:nth-child(4) > span:first-child {
+	transition-property: none;
+	transition-timing-function: linear(0, 0);
+	transition-duration: 0s;
+
+}
+
+/* .glass-sidebar > div:nth-child(3) > div:first-child > div:nth-child(6) > div:nth-child(4):is(:hover, .vim-cursor-on-active, .vim-cursor) > span { */
+	/* color: rgba(138, 69, 138, 0.8); */
+/* } */
+
+
+
+/*archive button*/
+.glass-sidebar > div:nth-child(3) > div:first-child > div:nth-child(6) > div:nth-child(2) > span:first-child {
+	transition-property: none;
+	transition-timing-function: linear(0, 0);
+	transition-duration: 0s;
+}
+
+/* .glass-sidebar > div:nth-child(3) > div:first-child > div:nth-child(6) > div:nth-child(2):is(:hover, .vim-cursor-on-active, .vim-cursor) > span { */
+	/* color: #aaaa45; */
+/* } */
+
+
+/*trash button*/
+.glass-sidebar > div:nth-child(3) > div:first-child > div:nth-child(6) > div:nth-child(3) > span:not(:last-child) {
+	transition-property: none;
+	transition-timing-function: linear(0, 0);
+	transition-duration: 0s;
+}
+
+.glass-sidebar > div:nth-child(3) > div:first-child > div:nth-child(6) > div:nth-child(3):is(:hover, .vim-cursor-on-active, .vim-cursor) > span:not(:last-child) {
+	color: rgb(var(--z-red));
+}
+

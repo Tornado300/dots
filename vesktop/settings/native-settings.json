@@ -1,0 +1,11 @@
+{
+    "plugins": {},
+    "customCspRules": {
+        "static.vecteezy.com": [
+            "connect-src",
+            "img-src",
+            "style-src",
+            "font-src"
+        ]
+    }
+}

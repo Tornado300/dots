@@ -1,0 +1,8 @@
+.zn-sidebar-footer-safe {
+	 height: 45px;
+}
+
+.zn-sidebar-footer-safe > *:not(:last-child) {
+	display: none;
+}
+

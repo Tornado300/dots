@@ -1,0 +1,6 @@
+header.glass-header > div:last-child > button:nth-child(7), 
+header.glass-header > div:last-child > button:nth-child(8),
+header.glass-header > div:last-child > button:nth-child(9)
+{
+	display: none;
+}

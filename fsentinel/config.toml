@@ -1,0 +1,158 @@
+# fsentinel config -- broad system coverage
+# Copy to ~/.config/fsentinel/config.toml and adjust for your system.
+#
+# Modes:
+#   strict     - any file not owned by pacman/a known territory is flagged.
+#                Only used where nothing legitimately regenerates at runtime.
+#   whitelist  - flag unowned files EXCEPT those matching a listed pattern.
+#                Used for dirs that are mostly pacman-owned but have known,
+#                expected runtime-generated exceptions (caches, indexes,
+#                bootloader files, etc) that aren't in any package's file list
+#                even though they belong there.
+#   blacklist  - flag unowned files ONLY if they match a listed pattern.
+#                Used for inherently mixed/third-party dirs.
+#   wildcard   - never scanned.
+#   hash       - track content changes via sha256. Works on directories OR
+#                individual files.
+#
+# patterns are Python regex, matched against the full absolute path with re.search.
+
+[package_managers]
+enabled = ["pacman_files", "pacman_dirs", "npm", "pip", "cargo_rustup", "go", "uv", "flatpak"]
+
+
+[theme]
+preset = "tokyo-night"
+# preset = "catppuccin-mocha"
+# preset = "nord"
+# accent = "blue"              # example: override just one role
+# header = "blue"
+# selected_bg = 60
+
+[paths]
+
+# =====================================================================
+# STRICT -- pure system binary/lib/include dirs, nothing legitimately
+# regenerates here, so any unowned file is either misplaced packaging
+# or a manual "just this once" install.
+# =====================================================================
+"/usr/bin" = { mode = "strict" }
+"/usr/sbin" = { mode = "strict" }
+"/usr/libexec" = { mode = "strict" }
+"/usr/include" = { mode = "strict" }
+"/usr/local/bin" = { mode = "strict" }
+"/usr/local/sbin" = { mode = "strict" }
+"/usr/local/lib" = { mode = "strict" }
+"/usr/local/include" = { mode = "strict" }
+"/usr/local/share" = { mode = "strict" }
+
+# =====================================================================
+# WHITELIST -- mostly pacman-owned, but each of these has known,
+# legitimate runtime-generated content that never appears in any
+# package's file list even though it belongs exactly where it lands.
+# =====================================================================
+
+# /usr/lib: __pycache__ regenerates constantly; depmod/dkms write kernel
+# module indexes and (for you specifically) the openrazer DKMS build
+# output; locale-archive is rebuilt by locale-gen.
+"/usr/lib" = { mode = "whitelist", patterns = [
+    "__pycache__/",
+    "\\.pyc$",
+    "^/usr/lib/modules/[^/]+/(extra|updates|dkms)/",
+    "^/usr/lib/modules/[^/]+/modules\\.",
+    "^/usr/lib/locale/locale-archive$",
+] }
+
+# /usr/share: icon/mime/desktop-file caches and compiled glib schemas all
+# regenerate locally via their respective update-* tools, not pacman.
+"/usr/share" = { mode = "whitelist", patterns = [
+    "icon-theme\\.cache$",
+    "/mime/mime\\.cache$",
+    "/mime/(aliases|globs2?|magic|subclasses|treemagic|types|XMLnamespaces)$",
+    "gschemas\\.compiled$",
+    "^/usr/share/info/dir$",
+    "/applications/mimeinfo\\.cache$",
+    "/fonts/.*/\\.uuid$",
+] }
+
+# /boot: kernel/initramfs images and grub's generated config aren't
+# literally in any package's file list even though mkinitcpio/grub
+# hooks put them here as part of normal, expected operation.
+"/boot" = { mode = "whitelist", patterns = [
+    "^/boot/initramfs-.*\\.img$",
+    "^/boot/vmlinuz-",
+    "^/boot/(intel|amd)-ucode\\.img$",
+    "^/boot/grub/grub\\.cfg$",
+    "^/boot/grub/grubenv$",
+    "^/boot/EFI/",
+] }
+
+# /etc: locally-managed system state (accounts, network, certs) plus
+# the subtrees already covered separately below by dedicated hash entries.
+"/etc" = { mode = "whitelist", patterns = [
+    "\\.pacnew$",
+    "\\.pacsave$",
+    "^/etc/(passwd|group|shadow|gshadow|subuid|subgid)$",
+    "^/etc/(hostname|localtime|timezone|mtab|fstab|crypttab)$",
+    "^/etc/ld\\.so\\.cache$",
+    "^/etc/machine-id$",
+    "^/etc/adjtime$",
+    "^/etc/resolv\\.conf$",
+    "^/etc/NetworkManager/system-connections/",
+    "^/etc/ssl/certs/",
+    "^/etc/ca-certificates/extracted/",
+    "^/etc/systemd/system/",
+    "^/etc/sudoers\\.d/",
+    "^/etc/ssh/sshd_config\\.d/",
+] }
+
+# /root: same nature as any home dir -- mostly personal state, not
+# packaging. Included since it's unambiguously a system-owned account,
+# but kept loose since almost nothing here is meant to be pacman-owned.
+"/root" = { mode = "blacklist", patterns = ["\\.bak$", "~$"] }
+
+# =====================================================================
+# BLACKLIST -- inherently mixed/third-party territory. Loose by design,
+# just catches obvious junk patterns rather than flagging everything.
+# =====================================================================
+"/opt" = { mode = "blacklist", patterns = [] }
+"/srv" = { mode = "blacklist", patterns = [] }
+
+# =====================================================================
+# HASH -- content-change tracking for small, high-value targets.
+# Directories or individual files both work.
+# =====================================================================
+"/etc/systemd/system" = { mode = "hash" }
+"/etc/sudoers.d" = { mode = "hash" }
+"/etc/ssh/sshd_config.d" = { mode = "hash" }
+"/etc/pacman.conf" = { mode = "hash" }
+"/etc/hosts" = { mode = "hash" }
+"/etc/sudoers" = { mode = "hash" }
+"/etc/ssh/sshd_config" = { mode = "hash" }
+"/boot/grub/grub.cfg" = { mode = "hash" }
+
+# =====================================================================
+# EXCLUDED ON PURPOSE -- not listed above, and shouldn't be added:
+#
+#   /proc /sys /dev /run     virtual filesystems, not real files
+#   /tmp /var/tmp             designed to churn, zero drift signal
+#   /var/log /var/cache       logs/caches change constantly by design
+#   /var/lib/{pacman,systemd,docker,flatpak,NetworkManager,bluetooth,...}
+#                             internal runtime databases for those services;
+#                             virtually their entire content is written by
+#                             the service itself, not "installed" content --
+#                             scanning them for "unowned" files is meaningless
+#   /var/spool                mail/cron/print queues, transient by nature
+#   /mnt /media                mount points for removable/external storage;
+#                             could be huge, could be someone else's
+#                             filesystem entirely, not "your system"
+#   lost+found, swap files    not real content
+#
+# Your own $HOME: deliberately NOT auto-included. Almost nothing there is
+# pacman-owned by design, so blanket strict/whitelist would be mostly
+# noise. Add specific subdirs yourself, e.g.:
+#
+# "/home/YOURUSER/programming" = { mode = "wildcard" }
+# "/home/YOURUSER/.config" = { mode = "blacklist", patterns = ["\\.bak$", "~$"] }
+# "/home/YOURUSER/.local/bin" = { mode = "strict" }
+# =====================================================================

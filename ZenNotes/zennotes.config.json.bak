@@ -1,0 +1,29 @@
+{
+  "workspaceMode": "local",
+  "vaultRoot": "/home/tornado300/Desktop/zennotes",
+  "localVaults": [
+    {
+      "root": "/home/tornado300/Desktop/zennotes",
+      "name": "zennotes",
+      "lastOpenedAt": 1783855976484
+    },
+    {
+      "root": "/home/tornado300/Desktop/Obsidian/shared",
+      "name": "shared",
+      "lastOpenedAt": 1783855968168
+    }
+  ],
+  "remoteWorkspace": null,
+  "remoteWorkspaceProfileId": null,
+  "remoteWorkspaceProfiles": [],
+  "windowState": {
+    "x": 1,
+    "y": 0,
+    "width": 1920,
+    "height": 1080,
+    "isMaximized": true
+  },
+  "zoomFactor": 1,
+  "quickCaptureHotkey": "CommandOrControl+Shift+Space",
+  "quickCapturePinned": false
+}

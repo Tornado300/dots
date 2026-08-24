@@ -1,0 +1,3 @@
+.zn-app-shell > div:nth-child(2) > section > div > section > div:nth-child(2) > div > div > div:first-child > div:last-child > button:last-child {
+	display: none;
+}

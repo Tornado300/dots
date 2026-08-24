@@ -1,0 +1,42 @@
+/*div with arrows and tab container*/
+div.glass-header {
+	flex-grow: 1;
+	max-height: 44px;
+}
+
+/*container with all tabs*/
+.workspace-tab-strip {
+	align-self: center;
+	display: flex;
+}
+
+/*tab content wrapper*/
+.workspace-tab-strip > div {
+	flex: 1;
+	max-width: 180px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+/*content inside tabs*/
+.workspace-tab-strip > div > div {
+	border: none;
+}
+
+/* pseudo object as border between tabs */
+.workspace-tab-strip > div:not(:last-child) > div::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background: rgb(var(--z-bg-2) / 1.3); 
+}
+
+/*content inside active tab*/
+.workspace-tab-strip > div[data-tab-active="true"] > div {
+	border-radius: 10px;
+}
+
+

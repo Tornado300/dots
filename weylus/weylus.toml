@@ -1,0 +1,9 @@
+access_code = "1324"
+bind_address = "0.0.0.0"
+web_port = 1701
+try_vaapi = false
+try_nvenc = false
+auto_start = false
+gui_theme = "HighContrast"
+no_gui = false
+wayland_support = true

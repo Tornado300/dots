@@ -1,0 +1,63 @@
+{
+  "Omit": {
+    "prefix": "omit",
+    "body": [
+      "Omit<${1:Type}, '${2:key}'>"
+    ],
+    "description": "Omit"
+  },
+  "Partial": {
+    "prefix": "part",
+    "body": [
+      "Partial<${1:Type}>"
+    ],
+    "description": "Partial"
+  },
+  "Pick": {
+    "prefix": "pick",
+    "body": [
+      "Pick<${1:Type}, '${2:key}'>"
+    ],
+    "description": "Pick"
+  },
+  "Record": {
+    "prefix": "rec",
+    "body": [
+      "Record<${1:string}, ${2:unknown}>"
+    ],
+    "description": "Record"
+  },
+  "interface": {
+    "prefix": "int",
+    "body": [
+      "interface ${1:Name} {",
+      "\t${2:field}: ${3:type}",
+      "}"
+    ],
+    "description": "interface"
+  },
+  "satisfies": {
+    "prefix": "sat",
+    "body": [
+      "satisfies ${1:Type}"
+    ],
+    "description": "satisfies"
+  },
+  "type alias": {
+    "prefix": "ta",
+    "body": [
+      "type ${1:Name} = ${2:type};"
+    ],
+    "description": "type alias"
+  },
+  "typed function": {
+    "prefix": "fnr",
+    "body": [
+      "function ${1:name}(${2:args}): ${3:ReturnType} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "typed function"
+  }
+}
+

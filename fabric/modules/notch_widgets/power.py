@@ -67,7 +67,9 @@ class PowerMenu(Box):
         self.show_all()
 
     def close_menu(self):
-        GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.close_notch()'")
+        GLib.spawn_command_line_async(
+            f"fabric-cli exec main-ui 'notch{self.monitor_id}.close_notch()'"
+        )
 
     def open(self):
         self.btn_shutdown.grab_focus()

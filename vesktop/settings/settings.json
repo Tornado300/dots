@@ -4,8 +4,8 @@
     "useQuickCss": true,
     "themeLinks": [],
     "enabledThemes": [
-        "EmojiReplace.theme.css",
-        "neutron.theme.css"
+        "neutron.theme.css",
+        "EmojiReplace.theme.css"
     ],
     "enableReactDevtools": true,
     "frameless": false,
@@ -124,7 +124,7 @@
         },
         "CallTimer": {
             "enabled": true,
-            "format": "stopwatch"
+            "format": "human"
         },
         "ClearURLs": {
             "enabled": true
@@ -259,8 +259,8 @@
             "invertScroll": true,
             "nearestNeighbour": false,
             "square": false,
-            "zoom": 6.199999999999999,
-            "size": 100,
+            "zoom": 7.045454545454546,
+            "size": 376.94805194805195,
             "zoomSpeed": 0.5
         },
         "ImplicitRelationships": {
@@ -272,16 +272,14 @@
         "KeepCurrentChannel": {
             "enabled": false
         },
-        "LastFMRichPresence": {
-            "enabled": false
-        },
         "LoadingQuotes": {
             "enabled": false
         },
         "MemberCount": {
             "enabled": true,
             "memberList": true,
-            "toolTip": true
+            "toolTip": true,
+            "voiceActivity": true
         },
         "MentionAvatars": {
             "enabled": false
@@ -307,9 +305,6 @@
             "logEdits": true,
             "logDeletes": true,
             "inlineEdits": true
-        },
-        "MessageTags": {
-            "enabled": false
         },
         "MoreCommands": {
             "enabled": false
@@ -375,7 +370,7 @@
         },
         "NotificationVolume": {
             "enabled": true,
-            "notificationVolume": 50.08787346221442
+            "notificationVolume": 11.11111111111111
         },
         "NSFWGateBypass": {
             "enabled": true
@@ -427,7 +422,8 @@
         },
         "QuickReply": {
             "enabled": true,
-            "shouldMention": 2
+            "shouldMention": 2,
+            "ignoreBlockedAndIgnored": true
         },
         "ReactErrorDecoder": {
             "enabled": false
@@ -623,7 +619,8 @@
         },
         "Settings": {
             "enabled": true,
-            "settingsLocation": "aboveNitro"
+            "settingsLocation": "aboveNitro",
+            "includeVencordInfoWhenCopying": true
         },
         "SupportHelper": {
             "enabled": true
@@ -645,6 +642,33 @@
         },
         "ExpressionCloner": {
             "enabled": false
+        },
+        "CopyStickerLinks": {
+            "enabled": false
+        },
+        "ImageFilename": {
+            "enabled": false
+        },
+        "MoreQuickReactions": {
+            "enabled": false
+        },
+        "CustomCommands": {
+            "enabled": false
+        },
+        "NoDefaultHangStatus": {
+            "enabled": false
+        },
+        "CharacterCounter": {
+            "enabled": false
+        },
+        "ConcatenatedComponentExtractor": {
+            "enabled": true
+        },
+        "NoMiddleClickPaste": {
+            "enabled": false
+        },
+        "MusicRichPresence": {
+            "enabled": false
         }
     },
     "notifications": {
@@ -657,7 +681,12 @@
         "authenticated": false,
         "url": "https://api.vencord.dev/",
         "settingsSync": false,
-        "settingsSyncVersion": 1749289667738
+        "settingsSyncVersion": 1784197055439
     },
-    "eagerPatches": false
+    "eagerPatches": false,
+    "uiElements": {
+        "chatBarButtons": {},
+        "messagePopoverButtons": {}
+    },
+    "windowsMaterial": "none"
 }

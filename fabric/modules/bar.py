@@ -14,36 +14,94 @@ import json
 
 class Bar(Window):
     def __init__(self, server, monitor_id=None, **kwargs):
-        super().__init__(name="bar", monitor=monitor_id, layer="top", anchor="left top right", margin="-4px 0px 0px 0px", exclusivity="auto", visible=True, all_visible=True)
+        super().__init__(
+            name="bar",
+            monitor=monitor_id,
+            layer="top",
+            anchor="left top right",
+            margin="-4px 0px 0px 0px",
+            exclusivity="auto",
+            visible=True,
+            all_visible=True,
+        )
         self.monitor_id = monitor_id
 
         self.workspace_container = Workspaces(
-            workspace_range=[11 - 10 * (self.monitor_id), 20 - 10 * (self.monitor_id)],  # 11-20 for id 0; 1-10 for id 1
+            workspace_range=[
+                11 - 10 * (self.monitor_id),
+                20 - 10 * (self.monitor_id),
+            ],  # 11-20 for id 0; 1-10 for id 1
             name="workspaces",
             buttons_factory=self.workspace_factory,
             orientation="h",
-            spacing=7
+            spacing=7,
         )
 
         # activate the open workspace on startup
-        monitor_raw = json.loads(Hyprland.send_command("j/monitors").reply.decode("utf-8"))
+        monitor_raw = json.loads(
+            Hyprland.send_command("j/monitors").reply.decode("utf-8")
+        )
         monitor_data = {}
         for id, monitor in enumerate(monitor_raw):
             monitor_data[id] = monitor
-        self.workspace_container.activate_workspace(monitor_data[self.monitor_id]["activeWorkspace"]["id"])
+        self.workspace_container.activate_workspace(
+            monitor_data[self.monitor_id]["activeWorkspace"]["id"]
+        )
 
         self.systray = SystemTray(server)
 
-        self.date_time = Box(name="date-time", orientation="v",
-                             children=[DateTime(name="date", formatters=["%a / %d.%m.%y"], h_align="center"),
-                                       DateTime(name="time", formatters=["%H:%M:%S"], h_align="end")])
+        self.date_time = Box(
+            name="date-time",
+            orientation="v",
+            children=[
+                DateTime(name="date", formatters=["%a / %d.%m.%y"], h_align="center"),
+                DateTime(name="time", formatters=["%H:%M:%S"], h_align="end"),
+            ],
+        )
 
-        self.left_side = Box(name="bar-left", spacing=4, orientation="h", children=[self.workspace_container])
-        self.right_side = Box(name="bar-right", spacing=4, orientation="h", children=[self.systray, self.date_time])
+        self.left_side = Box(
+            name="bar-left",
+            spacing=4,
+            orientation="h",
+            children=[self.workspace_container],
+        )
+        self.right_side = Box(
+            name="bar-right",
+            spacing=4,
+            orientation="h",
+            children=[self.systray, self.date_time],
+        )
 
-        self.bar_inner = CenterBox(name="bar-inner", orientation="h", h_align="fill", v_align="center",
-                                   start_children=Box(children=[self.left_side, RoundedAngleEnd(name="corner-bar-left", style_classes=["corner-bar"], place="topright", height=40, width=120)]),
-                                   end_children=Box(children=[RoundedAngleEnd(name="corner-bar-right", style_classes=["corner-bar"], place="topleft", height=40, width=120), self.right_side]))
+        self.bar_inner = CenterBox(
+            name="bar-inner",
+            orientation="h",
+            h_align="fill",
+            v_align="center",
+            start_children=Box(
+                children=[
+                    self.left_side,
+                    RoundedAngleEnd(
+                        name="corner-bar-left",
+                        style_classes=["corner-bar"],
+                        place="topright",
+                        height=40,
+                        width=120,
+                    ),
+                ]
+            ),
+            end_children=Box(
+                children=[
+                    RoundedAngleEnd(
+                        name="corner-bar-right",
+                        style_classes=["corner-bar"],
+                        place="topleft",
+                        height=40,
+                        width=120,
+                    ),
+                    self.right_side,
+                ]
+            ),
+        )
 
         self.children = self.bar_inner
         self.hidden = False
@@ -62,10 +120,14 @@ class Bar(Window):
         return None
 
     def search_apps(self):
-        GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.open_notch(\"launcher\")'")
+        GLib.spawn_command_line_async(
+            f"fabric-cli exec main-ui 'notch{self.monitor_id}.open_notch(\"launcher\")'"
+        )
 
     def power_menu(self):
-        GLib.spawn_command_line_async(f"fabric-cli exec main-ui 'notch{self.monitor_id}.open_notch(\"power\")'")
+        GLib.spawn_command_line_async(
+            f"fabric-cli exec main-ui 'notch{self.monitor_id}.open_notch(\"power\")'"
+        )
 
     def toggle_hidden(self):
         self.hidden = not self.hidden
