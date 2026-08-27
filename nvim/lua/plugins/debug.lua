@@ -10,6 +10,7 @@ return {
     'jay-babu/mason-nvim-dap.nvim',
     'leoluz/nvim-dap-go',
     'mfussenegger/nvim-dap-python',
+    { 'theHamsta/nvim-dap-virtual-text', opts = {} },
   },
   config = function()
     local dap = require 'dap'
@@ -33,21 +34,25 @@ return {
     vim.keymap.set('n', '<F8>', function()
       dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
     end, { desc = 'Debug: Set Conditional Breakpoint' })
+    vim.keymap.set('n', '<F4>', require('dap.ui.widgets').hover, { desc = 'Debug: Hover Value' })
 
     -- DAP UI
     dapui.setup {
       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
-      controls = {
-        icons = {
-          pause = '⏸',
-          play = '▶',
-          step_into = '⏎',
-          step_over = '⏭',
-          step_out = '⏮',
-          step_back = 'b',
-          run_last = '▶▶',
-          terminate = '⏹',
-          disconnect = '⏏',
+      controls = { enabled = false },
+      layouts = {
+        {
+          elements = {
+            { id = 'scopes', size = 0.75 },
+            { id = 'watches', size = 0.25 },
+          },
+          size = 60,
+          position = 'left',
+        },
+        {
+          elements = { 'repl' },
+          size = 10,
+          position = 'bottom',
         },
       },
     }
