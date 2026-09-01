@@ -3,7 +3,7 @@
     "obsidian-mcp-tools": {
       "command": "home/tornado300/.config/fabric/home/tornado300/Desktop/Obsidian/shared/.obsidian/plugins/mcp-tools/bin/mcp-server",
       "env": {
-        "OBSIDIAN_API_KEY": "c42af32175259b8e862592fc3becb3058d0bd0b4da3767bcc3c3a64cee15bfca"
+        "OBSIDIAN_API_KEY": ""
       }
     }
   }
