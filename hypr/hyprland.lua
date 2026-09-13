@@ -244,4 +244,4 @@ hl.bind("SUPER + O", hl.dsp.window.tag({ tag = "opaque", window = "activewindow"
 hl.bind("xf86tools", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_SOURCE@ toggle"))
 
 -- auto start --
-hl.exec_cmd("qpwgraph -a")
+-- hl.exec_cmd("qpwgraph -a")

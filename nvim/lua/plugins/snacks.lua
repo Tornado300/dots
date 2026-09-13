@@ -32,6 +32,20 @@ return {
       },
     },
     toggle = { enabled = true },
+    -- Animation is opt-in per-buffer only (see the animated_scroll() wrapper
+    -- in keybinds.lua for C-d/C-u/C-f/C-b) rather than applying to every
+    -- jump/scroll: an "on by default, exclude gg/G" filter can't reliably
+    -- catch every way gg/G get invoked (e.g. remapped/noremap'd sequences),
+    -- and mid-animation input (e.g. immediate y after a jump) desyncs from
+    -- the animation's intermediate cursor position.
+    scroll = {
+      enabled = true,
+      animate = { duration = { step = 8, total = 120 }, easing = 'linear' },
+      animate_repeat = { delay = 100, duration = { step = 4, total = 30 }, easing = 'linear' },
+      filter = function(buf)
+        return vim.b[buf].snacks_scroll == true
+      end,
+    },
     picker = {
       enabled = true,
       ui_select = true,

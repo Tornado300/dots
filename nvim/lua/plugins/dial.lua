@@ -17,7 +17,8 @@ return {
         augend.integer.alias.hex,
         augend.date.alias['%Y-%m-%d'],
         augend.date.alias['%Y/%m/%d'],
-        augend.constant.alias.bool,
+        augend.constant.alias.bool, -- true/false
+        augend.constant.alias.Bool, -- True/False (Python, etc.)
         augend.constant.new { elements = { 'and', 'or' }, word = true, cyclic = true },
         augend.constant.new { elements = { '&&', '||' }, word = false, cyclic = true },
         augend.semver.alias.semver,
