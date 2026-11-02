@@ -1,24 +1,31 @@
 -- standard
 hl.monitor({ output = "DP-1", mode = "1920x1080", position = "-1920x0", scale = 1 })
 hl.monitor({ output = "DP-3", mode = "1920x1080", position = "1x0", scale = 1 })
-hl.monitor({ output = "HDMI-A-2", disabled = true })
+hl.monitor({ output = "HDMI-A-1", disabled = true })
 
 -- one screen mode
 -- hl.monitor({ output = "DP-3", mode = "3840x1080", position = "0x0", scale = 1 })
 
+-- tv
+-- hl.monitor({ output = "HDMI", mode = "1920x1080", position = "1x0", scale = 1 })
+
 hl.on("hyprland.start", function()
 	hl.exec_cmd("awww-daemon && awww restore")
 	hl.exec_cmd("source ~/.config/fabric/.venv/bin/activate && python ~/.config/fabric/main.py")
-	hl.exec_cmd("dbus-update-activation-enviroment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-	hl.exec_cmd("sleep 4 && systemctl --user start xdg-desktop-portal-hyprland && sleep 1 && systemctl --user restart xdg-desktop-portal")
+	hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+	-- hl.exec_cmd("sleep 4 && systemctl --user start xdg-desktop-portal-hyprland && sleep 1 && systemctl --user restart xdg-desktop-portal")
 	hl.exec_cmd("xava -p ~/.config/xava/config_left")
 	hl.exec_cmd("wl-paste --watch cliphist store")
 	hl.exec_cmd("ie-r")
+	-- hypridle DISABLED 2026-09-14: the first Wayland dpms cycle on this nvidia 615 + DP
+	-- setup wedged the compositor (primary frozen, secondary black, hard reset needed).
+	-- Re-enable only after a supervised dpms off/on test passes. Config kept in hypridle.conf.
+	-- hl.exec_cmd("hypridle")
 end)
 
 Terminal = 'kitty --hold zsh -c "fastfetch; echo; echo; echo; echo;"'
 
-hl.env("XVURSOR_SIZE", 24)
+hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
 hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
 hl.env("LIBVA_DRIVER_NAME", "nvidia")
 hl.env("XDG_SESSION_TYPE", "wayland")
@@ -140,8 +147,8 @@ hl.bind("SUPER + ALT + F", hl.dsp.exec_cmd("pkill main-ui"))
 hl.bind("SUPER + CTRL + F", hl.dsp.exec_cmd("pkill needle-launcher"))
 
 hl.bind("SUPER + Q", hl.dsp.exec_cmd(Terminal))
-hl.bind("SUPER + X", hl.dsp.window.close("activewindow"))
-hl.bind("SUPER + V", hl.dsp.window.float("toggle", "activewindow"))
+hl.bind("SUPER + X", hl.dsp.window.close())
+hl.bind("SUPER + V", hl.dsp.window.float())
 hl.bind("SUPER + ALT + V", hl.dsp.window.pin("activewindow"))
 hl.bind("SUPER + B", hl.dsp.layout("togglesplit"))
 hl.bind("SUPER + code:95", hl.dsp.window.fullscreen({ "fullscreen", "toggle", "activewindow" }))

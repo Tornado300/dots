@@ -1,0 +1,4 @@
+toml-version = "v1.1.0"
+format.rules.group-blank-lines-limit = 2
+format.rules.key-value-equals-sign-alignment = true
+format.rules.trailing-comment-alignment = true

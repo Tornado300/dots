@@ -17,13 +17,15 @@
   "remoteWorkspaceProfileId": null,
   "remoteWorkspaceProfiles": [],
   "windowState": {
-    "x": 1,
-    "y": 0,
+    "x": 16,
+    "y": 10,
     "width": 1920,
     "height": 1080,
     "isMaximized": true
   },
   "zoomFactor": 1,
   "quickCaptureHotkey": "CommandOrControl+Shift+Space",
-  "quickCapturePinned": false
+  "quickCapturePinned": false,
+  "cliAutoUpdate": true,
+  "keepRunningInTray": false
 }

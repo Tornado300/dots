@@ -640,9 +640,6 @@
         "DisableDeepLinks": {
             "enabled": true
         },
-        "ExpressionCloner": {
-            "enabled": false
-        },
         "CopyStickerLinks": {
             "enabled": false
         },
@@ -669,6 +666,9 @@
         },
         "MusicRichPresence": {
             "enabled": false
+        },
+        "ExpressionManager": {
+            "enabled": false
         }
     },
     "notifications": {
@@ -681,12 +681,13 @@
         "authenticated": false,
         "url": "https://api.vencord.dev/",
         "settingsSync": false,
-        "settingsSyncVersion": 1784197055439
+        "settingsSyncVersion": 1793461828824
     },
     "eagerPatches": false,
     "uiElements": {
         "chatBarButtons": {},
         "messagePopoverButtons": {}
     },
-    "windowsMaterial": "none"
+    "windowsMaterial": "none",
+    "nativeTitleBar": false
 }

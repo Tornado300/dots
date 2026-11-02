@@ -34,9 +34,12 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
+  rocks = { enabled = false },
 })
 
+require 'runner_configs'
 require 'keybinds'
-require 'visual-substitute'
-require 'snippet_editor'
+
+-- require 'visual-substitute'
+require 'snippets.snippet_editor'
 -- vim: ts=2 sts=2 sw=2 et

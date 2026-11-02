@@ -11,9 +11,9 @@
 # Both aperture and size MUST be ODD for pixel-perfect crosshair centering
 # (the "Optical Monolith" invariant — enforced at runtime).
 [magnifier]
-aperture = 13       # source pixels captured (field of view)
+aperture = 171       # source pixels captured (field of view)
 aim_size = 1        # averaging field (alt+scroll): 1 = single pixel, 3 = 3×3 avg, etc. (odd, ≤ aperture)
-size = 397          # physical window size on screen (px)
+size = 395          # physical window size on screen (px)
 offset_x = 100      # horizontal offset from cursor
 offset_y = 0        # vertical offset from cursor
 jump_threshold = 10 # color sensitivity for Ctrl+Arrow jumps (higher = skip more gradients)
@@ -100,6 +100,8 @@ cmyk    = "{c}%, {m}%, {y}%, {k}%"
 size = 10             # max colors to remember
 reverse_order = true  # newest first in tray menu
 colors = [
+    "#3A4858",
+    "#3F4C54",
     "#40383F",
     "#191924",
 ]

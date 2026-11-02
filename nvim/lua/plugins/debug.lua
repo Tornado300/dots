@@ -9,7 +9,6 @@ return {
     'williamboman/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
     'leoluz/nvim-dap-go',
-    'mfussenegger/nvim-dap-python',
     { 'theHamsta/nvim-dap-virtual-text', opts = {} },
   },
   config = function()
@@ -26,15 +25,16 @@ return {
     }
 
     -- Keymaps (F1-F3 step controls, F5 continue, F6 breakpoint, F7 UI, F8 conditional breakpoint)
-    vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Start/Continue' })
     vim.keymap.set('n', '<F1>', dap.step_into, { desc = 'Debug: Step Into' })
     vim.keymap.set('n', '<F2>', dap.step_over, { desc = 'Debug: Step Over' })
     vim.keymap.set('n', '<F3>', dap.step_out, { desc = 'Debug: Step Out' })
+    vim.keymap.set('n', '<F4>', require('dap.ui.widgets').hover, { desc = 'Debug: Hover Value' })
+    vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Start/Continue' })
     vim.keymap.set('n', '<F6>', dap.toggle_breakpoint, { desc = 'Debug: Toggle Breakpoint' })
+    vim.keymap.set('n', '<F7>', dapui.toggle, { desc = 'Debug: See last session result.' })
     vim.keymap.set('n', '<F8>', function()
       dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
     end, { desc = 'Debug: Set Conditional Breakpoint' })
-    vim.keymap.set('n', '<F4>', require('dap.ui.widgets').hover, { desc = 'Debug: Hover Value' })
 
     -- DAP UI
     dapui.setup {
@@ -57,8 +57,6 @@ return {
       },
     }
 
-    vim.keymap.set('n', '<F7>', dapui.toggle, { desc = 'Debug: See last session result.' })
-
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
@@ -70,7 +68,19 @@ return {
       },
     }
 
-    -- Python: resolve interpreter from venv or fallback
+    -- debugpy itself is NOT configured here (no require('dap-python').setup()):
+    -- mason-nvim-dap's default handler (triggered automatically above, since
+    -- 'debugpy' is mason-installed) already points dap.adapters.python at
+    -- mason's own standalone debugpy-adapter binary -- an editor-level
+    -- install, independent of any project. dap-python's setup() would
+    -- overwrite that with a version that runs debugpy via the *project's*
+    -- interpreter instead, requiring debugpy to be pip/uv-installed into
+    -- every project's venv -- exactly what we don't want.
+    --
+    -- Below, pythonPath is a different, legitimate kind of project-dependency:
+    -- it's just "which interpreter should run my code", not "where does the
+    -- debugger engine live". Resolves the project's venv, falling back to
+    -- whatever python3 is on PATH.
     local function get_python_path()
       local venv = os.getenv 'VIRTUAL_ENV'
       if venv then
@@ -80,10 +90,9 @@ return {
       if vim.fn.executable(local_venv) == 1 then
         return local_venv
       end
-      return vim.fn.exepath 'python3' or '/usr/bin/python3'
+      local python3 = vim.fn.exepath 'python3'
+      return python3 ~= '' and python3 or '/usr/bin/python3'
     end
-
-    require('dap-python').setup(get_python_path())
 
     dap.configurations.python = {
       {

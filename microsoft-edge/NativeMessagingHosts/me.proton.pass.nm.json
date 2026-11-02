@@ -1,0 +1,11 @@
+{
+  "name": "me.proton.pass.nm",
+  "description": "Proton Pass host for native messaging with the desktop app",
+  "path": "/opt/proton-pass/resources/assets/proton_pass_nm_host",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://ghmbeldphafepmbegfdlkpapadhbakde/",
+    "chrome-extension://hlaiofkbmjenhgeinjlmkafaipackfjh/",
+    "chrome-extension://gcllgfdnfnllodcaambdaknbipemelie/"
+  ]
+}

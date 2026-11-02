@@ -1,0 +1,21 @@
+context.modules = [
+  {
+    name = libpipewire-module-filter-chain
+    args = {
+      node.description = "RNNoise Denoised Mic"
+      media.name       = "RNNoise Denoised Mic"
+      filter.graph = {
+        nodes = [
+          {
+            type   = ladspa
+            name   = rnnoise
+            plugin = librnnoise_ladspa
+            label  = noise_suppressor_mono
+          }
+        ]
+      }
+      capture.props = { node.name = "rnnoise_source" audio.channels = 1 }
+      playback.props = { node.name = "rnnoise_sink" audio.channels = 1 }
+    }
+  }
+]

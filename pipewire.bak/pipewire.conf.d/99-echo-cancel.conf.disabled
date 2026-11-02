@@ -1,0 +1,24 @@
+context.modules = [
+  {
+    name = libpipewire-module-echo-cancel
+    args = {
+      # WebRTC processing options
+      aec.args = {
+        webrtc.gain_control     = true
+        webrtc.extended_filter  = true
+        webrtc.delay_agnostic   = true
+        webrtc.noise_suppression = true
+        webrtc.voice_detection  = true
+        webrtc.high_pass_filter = true
+      }
+      source.props = {
+        node.name = "echo_cancel_source"
+        node.description = "Echo Cancelled Mic"
+      }
+      sink.props = {
+        node.name = "echo_cancel_sink"
+        node.description = "Echo Cancel Playback"
+      }
+    }
+  }
+]

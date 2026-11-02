@@ -1,0 +1,78 @@
+<!DOCTYPE patchbay>
+<patchbay name="spacial_audio patch" version="0.9.9">
+ <items>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Zen" port="Zen:output_FL"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Zen" port="Zen:output_SR"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Virtual Surround 7.1" port="Virtual Surround 7.1:output_FL"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Zen" port="Zen:output_RL"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Zen" port="Zen:output_LFE"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Virtual Surround 7.1" port="Virtual Surround 7.1:output_FR"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Chromium-1" port="Chromium:output_LFE"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Zen" port="Zen:output_FR"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Chromium-1" port="Chromium:output_RR"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Zen" port="Zen:output_SL"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Zen" port="Zen:output_RR"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Chromium-1" port="Chromium:output_RL"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Chromium-1" port="Chromium:output_FC"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Chromium-1" port="Chromium:output_SR"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Chromium-1" port="Chromium:output_FL"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Chromium-1" port="Chromium:output_FR"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Chromium-1" port="Chromium:output_SL"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Zen" port="Zen:output_FC"/>
+   <input node="RZ04-0318 Gaming Headset [Kraken Ultimate] Analoges Stereo" port="Razer Kraken Ultimate:playback_FL"/>
+  </item>
+ </items>
+</patchbay>
+

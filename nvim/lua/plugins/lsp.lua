@@ -23,7 +23,8 @@ return {
         'prettier',
         'typos-lsp',
         'lua-language-server',
-        'pyright',
+        -- 'pyright',
+        'pyrefly',
         'ruff',
         'qmlls',
         'gopls',
@@ -101,6 +102,22 @@ return {
       },
     })
 
+    vim.lsp.config('pyrefly', {
+      settings = {
+        python = {
+          analysis = {
+            inlayHints = {
+              variableTypes = false,
+            },
+            showHoverGoToLinks = false,
+          },
+          pyrefly = {
+            typeCheckingMode = 'default',
+          },
+        },
+      },
+    })
+
     vim.lsp.config('spyglassmc_language_server', {
       -- mcdoc: spyglassmc's schema language for describing/type-hinting the
       -- datapack JSON formats (loot tables, advancements, recipes, ...).
@@ -153,7 +170,8 @@ return {
 
     vim.lsp.enable 'bashls'
     vim.lsp.enable 'lua_ls'
-    vim.lsp.enable 'pyright'
+    -- vim.lsp.enable 'pyright'
+    vim.lsp.enable 'pyrefly'
     vim.lsp.enable 'ruff'
     vim.lsp.enable 'spyglassmc_language_server'
     vim.lsp.enable 'rust_analyzer'
@@ -165,5 +183,6 @@ return {
     vim.lsp.enable 'ts_ls'
     vim.lsp.enable 'eslint'
     vim.lsp.enable 'typos_lsp'
+    vim.lsp.enable 'tombi'
   end,
 }

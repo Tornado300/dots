@@ -1,0 +1,8 @@
+enable_notifications = true
+enable_systray = false
+enable_mpris_v2 = true
+no_duplicates = false
+request_interval_secs_v3 = 8
+current_device_name = "virtual-surround-7.1-sink.monitor"
+website_search_url = "https://www.youtube.com/results?search_query="
+website_search_text = "Suche auf Youtube"
