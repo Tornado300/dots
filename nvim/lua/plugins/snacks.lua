@@ -1,6 +1,6 @@
 -- snacks.nvim: multi-feature QoL bundle. Enabled here: dashboard (<leader>m),
 -- picker (fuzzy find/grep/etc, see <leader>s*), notifier (<leader>n),
--- toggle helpers, big-file handling, animated scroll, and indent guides.
+-- toggle helpers, big-file handling, and animated scroll.
 -- https://github.com/folke/snacks.nvim
 return {
   'folke/snacks.nvim',
@@ -32,42 +32,6 @@ return {
       },
     },
     toggle = { enabled = true },
-    -- Trying this in place of indent-blankline.nvim (commented out, see
-    -- plugins/indent-blankline.lua): same guides + current-scope highlight,
-    -- plus animation on by default, one less dependency if it sticks.
-    indent = {
-      enabled = true,
-      -- No animation: snap straight to the new scope highlight instead of
-      -- transitioning, so there's nothing to overlap/flicker on fast moves.
-      animate = { enabled = false },
-      scope = {
-        -- Default debounce (30ms) recalculates on nearly every cursor move,
-        -- so scrolling through nested code flickers through each level on
-        -- the way. Raised so the highlight only updates once the cursor's
-        -- actually settled somewhere, not while passing through.
-        debounce = 45,
-        treesitter = {
-          -- Without this, scope falls back to "nearest node with a
-          -- different indent" -- i.e. every if/for/nested block counts,
-          -- which is what was actually causing most of the flicker (a new
-          -- scope boundary on nearly every line of normal code). Restricted
-          -- to function/class, matching what ibl showed by default (its
-          -- python scope list is module/class_definition/function_definition,
-          -- deliberately excluding if/for/while).
-          blocks = {
-            enabled = true,
-            'function_declaration',
-            'function_definition',
-            'method_declaration',
-            'method_definition',
-            'class_declaration',
-            'class_definition',
-            'arrow_function', -- JS/TS: () => {}
-            'function_expression', -- JS/TS: const x = function() {}
-          },
-        },
-      },
-    },
     -- Animation is opt-in per-buffer only (see the animated_scroll() wrapper
     -- in keybinds.lua for C-d/C-u/C-f/C-b) rather than applying to every
     -- jump/scroll: an "on by default, exclude gg/G" filter can't reliably

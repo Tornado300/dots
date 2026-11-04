@@ -1,0 +1,12 @@
+hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
+hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
+hl.env("LIBVA_DRIVER_NAME", "nvidia")
+hl.env("XDG_SESSION_TYPE", "wayland")
+hl.env("GBM_BACKEND", "nvidia-drm")
+hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+hl.env("WLR_DRM_DEVICES", "/home/tornado300/.config/hypr/card")
+
+hl.env("GTK_THEME", "PurPurNight")
+hl.env("GTK_USE_PORTAL", "1")
+hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
+hl.env("GNUPGHOME", os.getenv("HOME") .. "/.local/share/gnupg")

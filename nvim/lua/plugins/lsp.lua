@@ -80,28 +80,6 @@ return {
       },
     })
 
-    vim.lsp.config('pyright', {
-      before_init = function(_, config)
-        local venv = vim.fn.getcwd() .. '/.venv'
-        if vim.fn.isdirectory(venv) == 1 then
-          config.settings.python.pythonPath = venv .. '/bin/python'
-        end
-      end,
-      settings = {
-        python = {
-          analysis = {
-            typeCheckingMode = 'basic',
-            inlayHints = {
-              variableTypes = true,
-              functionReturnTypes = true,
-              callArgumentNames = true,
-              pytestParameters = true,
-            },
-          },
-        },
-      },
-    })
-
     vim.lsp.config('pyrefly', {
       settings = {
         python = {
@@ -170,7 +148,6 @@ return {
 
     vim.lsp.enable 'bashls'
     vim.lsp.enable 'lua_ls'
-    -- vim.lsp.enable 'pyright'
     vim.lsp.enable 'pyrefly'
     vim.lsp.enable 'ruff'
     vim.lsp.enable 'spyglassmc_language_server'

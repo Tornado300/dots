@@ -32,7 +32,7 @@ return {
       -- .prettierrc/pyproject.toml if it sets its own width.
       -- ruff needs append_args: its args start with the "format" subcommand, and
       -- ruff's CLI parser rejects --line-length appearing before that subcommand.
-      stylua = { prepend_args = { '--column-width', '160' } },
+      stylua = { prepend_args = { '--column-width', '160', '--indent-type', 'Spaces', '--collapse-simple-statement', 'Always' } },
       ruff_format = { append_args = { '--line-length', '160' } },
       prettier = { prepend_args = { '--print-width', '160' } },
     },
