@@ -2,7 +2,7 @@
 -- https://github.com/RubixTheSlime/vim-mcfunction
 return {
   {
-    "RubixTheSlime/vim-mcfunction",
-    ft = { "mcfunction" },
+    'RubixTheSlime/vim-mcfunction',
+    ft = { 'mcfunction' },
   },
 }

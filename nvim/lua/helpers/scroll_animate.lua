@@ -16,9 +16,7 @@ function M.scroll(keys)
     local count = vim.v.count > 0 and tostring(vim.v.count) or ''
     vim.b.snacks_scroll = true
     vim.cmd('normal! ' .. count .. termcodes)
-    vim.defer_fn(function()
-      vim.b.snacks_scroll = false
-    end, 250)
+    vim.defer_fn(function() vim.b.snacks_scroll = false end, 250)
   end
 end
 

@@ -37,13 +37,14 @@ function M.run()
   local cmd = 'cd ' .. dir .. ' && ' .. table.concat(parts, ' && ')
 
   local term = terminal_tab.ensure()
-  vim.fn.chansend(vim.bo[term.buf].channel, cmd .. '\n')
+  -- '\r', not '\n': zsh's line editor treats a bare '\n' as a literal
+  -- newline insert (same as a real Enter key, which sends CR not LF), so
+  -- '\n' alone leaves the command sitting unexecuted in the prompt.
+  vim.fn.chansend(vim.bo[term.buf].channel, cmd .. '\r')
 end
 
 --- @param filetype string
 --- @param commands string|string[] one command, or several run in order
-function M.config_ft(filetype, commands)
-  M.commands[filetype] = type(commands) == 'string' and { commands } or commands
-end
+function M.config_ft(filetype, commands) M.commands[filetype] = type(commands) == 'string' and { commands } or commands end
 
 return M

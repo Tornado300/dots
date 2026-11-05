@@ -43,9 +43,7 @@ local manifest_file = snippet_dir .. '/package.json'
 local function serialize_snippet_file(entries)
   local names = vim.tbl_keys(entries)
   table.sort(names)
-  if #names == 0 then
-    return '{}\n'
-  end
+  if #names == 0 then return '{}\n' end
   local parts = {}
   for _, name in ipairs(names) do
     local e = entries[name]
@@ -69,9 +67,7 @@ local function serialize_snippet_file(entries)
   return '{\n' .. table.concat(parts, ',\n') .. '\n}\n'
 end
 
-local function write_file(path, text)
-  util.write_file(vim.fn.fnamemodify(path, ':h'), path, text)
-end
+local function write_file(path, text) util.write_file(vim.fn.fnamemodify(path, ':h'), path, text) end
 
 local function serialize_manifest(languages)
   table.sort(languages)
@@ -99,13 +95,9 @@ local function ensure_manifest_entry(ft)
   local have_ft = false
   for _, entry in ipairs((manifest.contributes or {}).snippets or {}) do
     table.insert(languages, entry.language)
-    if entry.language == ft then
-      have_ft = true
-    end
+    if entry.language == ft then have_ft = true end
   end
-  if have_ft then
-    return
-  end
+  if have_ft then return end
   table.insert(languages, ft)
   write_file(manifest_file, serialize_manifest(languages))
 end
@@ -124,9 +116,7 @@ util.ensure_exclusion_hook()
 -- original suppressed with nothing to replace it.
 local function save_snippet(ft, trigger, name, body_lines, was_override)
   invalidate(ft, trigger, true)
-  if was_override then
-    exclude_trigger(ft, trigger)
-  end
+  if was_override then exclude_trigger(ft, trigger) end
 
   ensure_manifest_entry(ft)
   local path = snippet_dir .. '/' .. ft .. '.json'
@@ -153,9 +143,7 @@ local function open_floating_editor(opts)
   vim.bo[buf].buftype = 'acwrite'
   vim.bo[buf].bufhidden = 'wipe'
   vim.api.nvim_buf_set_name(buf, 'snippet://edit/' .. (opts.filetype or 'text') .. '/' .. os.time())
-  if opts.initial_lines and #opts.initial_lines > 0 then
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, opts.initial_lines)
-  end
+  if opts.initial_lines and #opts.initial_lines > 0 then vim.api.nvim_buf_set_lines(buf, 0, -1, false, opts.initial_lines) end
 
   local width = math.floor(vim.o.columns * (opts.width_pct or 0.6))
   local height = math.floor(vim.o.lines * (opts.height_pct or 0.4))
@@ -176,25 +164,19 @@ local function open_floating_editor(opts)
     callback = function()
       local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
       vim.bo[buf].modified = false
-      if vim.api.nvim_win_is_valid(win) then
-        vim.api.nvim_win_close(win, true)
-      end
+      if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
       opts.on_save(lines)
     end,
   })
   vim.keymap.set('n', 'q', function()
-    if vim.api.nvim_win_is_valid(win) then
-      vim.api.nvim_win_close(win, true)
-    end
+    if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
   end, { buffer = buf, desc = 'Cancel' })
 end
 
 --- Smart snippets (lua/snippets/smart/<ft>.json, see lua/snippet_engine.lua) ------
 
 local function json_array(list, indent)
-  if #list == 0 then
-    return '[]'
-  end
+  if #list == 0 then return '[]' end
   local pad = string.rep('  ', indent)
   local pad2 = string.rep('  ', indent + 1)
   local parts = {}
@@ -207,9 +189,7 @@ end
 local function serialize_smart_file(entries)
   local names = vim.tbl_keys(entries)
   table.sort(names)
-  if #names == 0 then
-    return '{}\n'
-  end
+  if #names == 0 then return '{}\n' end
   local parts = {}
   for _, name in ipairs(names) do
     local cfg = entries[name]
@@ -280,30 +260,24 @@ local function lines_to_sections(lines)
     elseif current == 'header' or current == 'footer' then
       table.insert(sections[current], line)
     elseif current == 'line_template' or current == 'empty_message' then
-      if sections[current] == '' then
-        sections[current] = line
-      end
+      if sections[current] == '' then sections[current] = line end
     end
   end
   -- an untouched, deliberately-empty header/footer collects one blank line — drop it
   for _, key in ipairs { 'header', 'footer' } do
-    if #sections[key] == 1 and sections[key][1] == '' then
-      sections[key] = {}
-    end
+    if #sections[key] == 1 and sections[key][1] == '' then sections[key] = {} end
   end
   return sections
 end
 
-local function open_sections_editor(ft, sections, on_save)
+local function open_sections_editor(_, sections, on_save)
   open_floating_editor {
     filetype = '',
     initial_lines = sections_to_lines(sections),
     width_pct = 0.7,
     height_pct = 0.5,
     title = ' Smart snippet template — :w to save, q to cancel ',
-    on_save = function(lines)
-      on_save(lines_to_sections(lines))
-    end,
+    on_save = function(lines) on_save(lines_to_sections(lines)) end,
   }
 end
 
@@ -311,9 +285,7 @@ end
 -- original at save time, not before, so cancelling never leaves it suppressed.
 local function save_smart_snippet(ft, trigger, name, meta, sections, was_override)
   invalidate(ft, trigger, true)
-  if was_override then
-    exclude_trigger(ft, trigger)
-  end
+  if was_override then exclude_trigger(ft, trigger) end
 
   local path = util.smart_dir .. '/' .. ft .. '.json'
   local entries = read_json(path, {})
@@ -344,26 +316,23 @@ end
 -- on real code first if you don't already know the node_types/field/item_field values.
 local function prompt_treesitter_meta(on_done)
   vim.ui.select({ 'below', 'above' }, { prompt = 'Search direction (relative to cursor):' }, function(direction)
-    if not direction then
-      return
-    end
+    if not direction then return end
     vim.ui.input({ prompt = 'Node type(s), comma-separated (e.g. function_declaration,arrow_function): ' }, function(types_str)
-      if not types_str or types_str == '' then
-        return
-      end
+      if not types_str or types_str == '' then return end
       vim.ui.input({ prompt = 'Field to read on that node (e.g. parameters): ' }, function(field)
-        if not field or field == '' then
-          return
-        end
-        vim.ui.input({ prompt = 'Field to read on each item (e.g. pattern; blank = use the item itself): ' }, function(item_field)
-          on_done {
-            kind = 'treesitter',
-            direction = direction,
-            node_types = vim.split(types_str, '%s*,%s*'),
-            field = field,
-            item_field = (item_field and item_field ~= '') and item_field or nil,
-          }
-        end)
+        if not field or field == '' then return end
+        vim.ui.input(
+          { prompt = 'Field to read on each item (e.g. pattern; blank = use the item itself): ' },
+          function(item_field)
+            on_done {
+              kind = 'treesitter',
+              direction = direction,
+              node_types = vim.split(types_str, '%s*,%s*'),
+              field = field,
+              item_field = (item_field and item_field ~= '') and item_field or nil,
+            }
+          end
+        )
       end)
     end)
   end)
@@ -372,18 +341,12 @@ end
 -- Prompts for a regex smart-snippet's extraction config.
 local function prompt_regex_meta(on_done)
   vim.ui.select({ 'below', 'above' }, { prompt = 'Search direction (relative to cursor):' }, function(direction)
-    if not direction then
-      return
-    end
+    if not direction then return end
     vim.ui.input({ prompt = [[Vim-regex pattern (\(...\) for capture groups): ]] }, function(pattern)
-      if not pattern or pattern == '' then
-        return
-      end
+      if not pattern or pattern == '' then return end
       vim.ui.input({ prompt = 'Max lines to search: ', default = '20' }, function(max_lines_str)
         vim.ui.select({ 'Only nearest match', 'All matches in range' }, { prompt = 'How many matches?' }, function(multi_choice)
-          if not multi_choice then
-            return
-          end
+          if not multi_choice then return end
           on_done {
             kind = 'regex',
             direction = direction,
@@ -406,51 +369,35 @@ local DEFAULT_SECTIONS = {
 
 local function snippet_new()
   vim.ui.select({ 'Static text', 'Smart: treesitter', 'Smart: regex' }, { prompt = 'Snippet kind:' }, function(kind_choice)
-    if not kind_choice then
-      return
-    end
+    if not kind_choice then return end
 
     vim.ui.input({ prompt = 'Filetype: ', default = vim.bo.filetype }, function(ft)
-      if not ft or ft == '' then
-        return
-      end
+      if not ft or ft == '' then return end
       vim.ui.input({ prompt = 'Trigger: ' }, function(trigger)
-        if not trigger or trigger == '' then
-          return
-        end
+        if not trigger or trigger == '' then return end
         vim.ui.input({ prompt = 'Name/description: ', default = trigger }, function(name)
-          if not name or name == '' then
-            return
-          end
+          if not name or name == '' then return end
 
           -- Make sure friendly-snippets/luasnip are actually loaded before inspecting them.
-          pcall(function()
-            require('lazy').load { plugins = { 'nvim-cmp' } }
-          end)
+          pcall(function() require('lazy').load { plugins = { 'nvim-cmp' } } end)
 
           local existing = {}
           local ok, luasnip = pcall(require, 'luasnip')
           if ok then
             for _, snip in ipairs(luasnip.get_snippets(ft) or {}) do
-              if snip.trigger == trigger then
-                table.insert(existing, snip)
-              end
+              if snip.trigger == trigger then table.insert(existing, snip) end
             end
           end
 
           local function proceed(override)
             if kind_choice == 'Static text' then
-              open_body_editor(ft, nil, function(lines)
-                save_snippet(ft, trigger, name, lines, override)
-              end)
+              open_body_editor(ft, nil, function(lines) save_snippet(ft, trigger, name, lines, override) end)
               return
             end
 
             local prompt_meta = kind_choice == 'Smart: treesitter' and prompt_treesitter_meta or prompt_regex_meta
             prompt_meta(function(meta)
-              open_sections_editor(ft, DEFAULT_SECTIONS, function(sections)
-                save_smart_snippet(ft, trigger, name, meta, sections, override)
-              end)
+              open_sections_editor(ft, DEFAULT_SECTIONS, function(sections) save_smart_snippet(ft, trigger, name, meta, sections, override) end)
             end)
           end
 
@@ -483,9 +430,7 @@ vim.api.nvim_create_user_command('SnippetEdit', function(cmd_opts)
   end
   ensure_manifest_entry(ft)
   local path = snippet_dir .. '/' .. ft .. '.json'
-  if vim.fn.filereadable(path) == 0 then
-    write_file(path, '{}\n')
-  end
+  if vim.fn.filereadable(path) == 0 then write_file(path, '{}\n') end
   vim.cmd.edit(path)
 end, { nargs = '?', desc = 'Edit personal snippets (VSCode JSON) for a filetype' })
 
@@ -499,9 +444,7 @@ vim.api.nvim_create_user_command('SnippetEditSmart', function(cmd_opts)
     return
   end
   local path = util.smart_dir .. '/' .. ft .. '.json'
-  if vim.fn.filereadable(path) == 0 then
-    write_file(path, '{}\n')
-  end
+  if vim.fn.filereadable(path) == 0 then write_file(path, '{}\n') end
   vim.cmd.edit(path)
 end, { nargs = '?', desc = 'Edit personal smart snippets (JSON) for a filetype' })
 
@@ -515,9 +458,7 @@ local function list_personal_fts()
   local fts = {}
   for _, path in ipairs(vim.fn.glob(snippet_dir .. '/*.json', true, true)) do
     local ft = vim.fn.fnamemodify(path, ':t:r')
-    if ft ~= 'package' and ft ~= '_excluded' then
-      table.insert(fts, ft)
-    end
+    if ft ~= 'package' and ft ~= '_excluded' then table.insert(fts, ft) end
   end
   return fts
 end
@@ -543,9 +484,7 @@ local function collect_personal_items()
     end
   end
   table.sort(items, function(a, b)
-    if a.ft ~= b.ft then
-      return a.ft < b.ft
-    end
+    if a.ft ~= b.ft then return a.ft < b.ft end
     return a.trigger < b.trigger
   end)
   return items
@@ -587,25 +526,19 @@ end
 local friendly_items_cache = nil
 
 local function to_list(v)
-  if v == nil then
-    return {}
-  end
+  if v == nil then return {} end
   return type(v) == 'table' and v or { v }
 end
 
 local function find_friendly_snippets_manifest()
   for _, f in ipairs(vim.api.nvim_get_runtime_file('package.json', true)) do
-    if f:match 'friendly%-snippets' then
-      return f
-    end
+    if f:match 'friendly%-snippets' then return f end
   end
   return nil
 end
 
 local function collect_friendly_items()
-  if friendly_items_cache then
-    return friendly_items_cache
-  end
+  if friendly_items_cache then return friendly_items_cache end
 
   local manifest_path = find_friendly_snippets_manifest()
   if not manifest_path then
@@ -664,18 +597,14 @@ local function remove_smart_json_entry(ft, name)
 end
 
 local function edit_snippet_item(item)
-  open_body_editor(item.ft, item.body, function(lines)
-    save_snippet(item.ft, item.trigger, item.name, lines, item.is_override)
-  end)
+  open_body_editor(item.ft, item.body, function(lines) save_snippet(item.ft, item.trigger, item.name, lines, item.is_override) end)
 end
 
 -- Enter on a friendly-snippets item: clone it straight into an editable override,
 -- pre-filled with the original's body — skips the ft/trigger/name prompts since
 -- they're already known.
 local function clone_friendly_item(item)
-  open_body_editor(item.ft, item.body, function(lines)
-    save_snippet(item.ft, item.trigger, item.name, lines, true)
-  end)
+  open_body_editor(item.ft, item.body, function(lines) save_snippet(item.ft, item.trigger, item.name, lines, true) end)
 end
 
 -- Editing a smart snippet from the list only opens the header/line_template/footer/
@@ -690,9 +619,11 @@ local function edit_smart_snippet_item(item)
     footer = item.cfg.footer or {},
     empty_message = item.cfg.empty_message,
   }
-  open_sections_editor(item.ft, sections, function(new_sections)
-    save_smart_snippet(item.ft, item.trigger, item.name, item.cfg, new_sections, item.is_override)
-  end)
+  open_sections_editor(
+    item.ft,
+    sections,
+    function(new_sections) save_smart_snippet(item.ft, item.trigger, item.name, item.cfg, new_sections, item.is_override) end
+  )
 end
 
 -- Delete our entry for `item`. If it was an override, this also restores whatever
@@ -733,9 +664,7 @@ local function snippet_picker_format(item)
     { '  ' .. item.name, 'SnacksPickerComment' },
   }
   local tag = SOURCE_TAGS[item.source]
-  if tag then
-    table.insert(ret, tag)
-  end
+  if tag then table.insert(ret, tag) end
   return ret
 end
 
@@ -747,9 +676,7 @@ end
 local function snippet_list()
   -- Loading friendly-snippets' manifest needs nvim-cmp's dependency chain on the
   -- runtimepath first (see collect_friendly_items / find_friendly_snippets_manifest).
-  pcall(function()
-    require('lazy').load { plugins = { 'nvim-cmp' } }
-  end)
+  pcall(function() require('lazy').load { plugins = { 'nvim-cmp' } } end)
 
   local items = collect_personal_items()
   vim.list_extend(items, collect_smart_items())
@@ -762,9 +689,7 @@ local function snippet_list()
     format = snippet_picker_format,
     confirm = function(picker, item)
       picker:close()
-      if not item then
-        return
-      end
+      if not item then return end
       if item.source == 'friendly' then
         clone_friendly_item(item)
       elseif item.source == 'smart' or item.source == 'smart-override' then
@@ -783,9 +708,7 @@ local function snippet_list()
     },
     actions = {
       delete_snippet = function(picker, item)
-        if not item then
-          return
-        end
+        if not item then return end
         if item.source == 'friendly' then
           vim.notify('Not a personal snippet — press <CR> to create an override first', vim.log.levels.WARN)
           return

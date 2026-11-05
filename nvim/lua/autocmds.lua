@@ -5,9 +5,7 @@
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.hl.on_yank()
-  end,
+  callback = function() vim.hl.on_yank() end,
 })
 
 -- Filetype detection for file types Neovim doesn't recognize by default
@@ -57,18 +55,14 @@ vim.api.nvim_create_autocmd({ 'BufWinLeave', 'BufWritePost', 'WinLeave' }, {
   desc = 'Save view (cursor/folds) for real files',
   group = view_group,
   callback = function(args)
-    if vim.b[args.buf].view_activated then
-      vim.cmd.mkview { mods = { emsg_silent = true } }
-    end
+    if vim.b[args.buf].view_activated then vim.cmd.mkview { mods = { emsg_silent = true } } end
   end,
 })
 vim.api.nvim_create_autocmd('BufWinEnter', {
   desc = 'Restore view (cursor/folds) for real files',
   group = view_group,
   callback = function(args)
-    if vim.b[args.buf].view_activated then
-      return
-    end
+    if vim.b[args.buf].view_activated then return end
     local filetype = vim.api.nvim_get_option_value('filetype', { buf = args.buf })
     local buftype = vim.api.nvim_get_option_value('buftype', { buf = args.buf })
     local ignore_filetypes = { 'gitcommit', 'gitrebase', 'svg', 'hgcommit' }

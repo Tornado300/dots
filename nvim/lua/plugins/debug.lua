@@ -32,9 +32,7 @@ return {
     vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Start/Continue' })
     vim.keymap.set('n', '<F6>', dap.toggle_breakpoint, { desc = 'Debug: Toggle Breakpoint' })
     vim.keymap.set('n', '<F7>', dapui.toggle, { desc = 'Debug: See last session result.' })
-    vim.keymap.set('n', '<F8>', function()
-      dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
-    end, { desc = 'Debug: Set Conditional Breakpoint' })
+    vim.keymap.set('n', '<F8>', function() dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ') end, { desc = 'Debug: Set Conditional Breakpoint' })
 
     -- DAP UI
     dapui.setup {
@@ -83,13 +81,9 @@ return {
     -- whatever python3 is on PATH.
     local function get_python_path()
       local venv = os.getenv 'VIRTUAL_ENV'
-      if venv then
-        return venv .. '/bin/python'
-      end
+      if venv then return venv .. '/bin/python' end
       local local_venv = vim.fn.getcwd() .. '/.venv/bin/python'
-      if vim.fn.executable(local_venv) == 1 then
-        return local_venv
-      end
+      if vim.fn.executable(local_venv) == 1 then return local_venv end
       local python3 = vim.fn.exepath 'python3'
       return python3 ~= '' and python3 or '/usr/bin/python3'
     end
@@ -100,6 +94,7 @@ return {
         request = 'launch',
         name = 'Launch file',
         program = '${file}',
+        justMyCode = false,
         pythonPath = get_python_path,
       },
       {
@@ -117,9 +112,7 @@ return {
         type = 'python',
         request = 'launch',
         name = 'Launch module',
-        module = function()
-          return vim.fn.input 'Module name: '
-        end,
+        module = function() return vim.fn.input 'Module name: ' end,
         pythonPath = get_python_path,
       },
     }

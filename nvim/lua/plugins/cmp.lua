@@ -7,9 +7,7 @@ return {
     {
       'L3MON4D3/LuaSnip',
       build = (function()
-        if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-          return
-        end
+        if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then return end
         return 'make install_jsregexp'
       end)(),
       dependencies = {
@@ -24,7 +22,7 @@ return {
             -- "Smart" snippets: treesitter/regex-driven, defined in
             -- lua/snippets/smart/<filetype>.json, built by lua/snippet_engine.lua.
             -- Same :SnippetNew/:SnippetList UI as plain snippets, see snippet_editor.lua.
-            require('snippet_engine').load_all()
+            require('snippets.snippet_engine').load_all()
           end,
         },
       },
@@ -46,17 +44,13 @@ return {
 
     cmp.setup {
       snippet = {
-        expand = function(args)
-          luasnip.lsp_expand(args.body)
-        end,
+        expand = function(args) luasnip.lsp_expand(args.body) end,
       },
       completion = { completeopt = 'menu,menuone,noinsert' },
       formatting = {
         format = function(_, item)
           local max = 60
-          if vim.fn.strdisplaywidth(item.abbr) > max then
-            item.abbr = vim.fn.strcharpart(item.abbr, 0, max - 1) .. '…'
-          end
+          if vim.fn.strdisplaywidth(item.abbr) > max then item.abbr = vim.fn.strcharpart(item.abbr, 0, max - 1) .. '…' end
           return item
         end,
       },
@@ -69,17 +63,14 @@ return {
         ['<S-Tab>'] = cmp.mapping.select_prev_item(),
         ['<C-Space>'] = cmp.mapping.complete {},
         ['<C-l>'] = cmp.mapping(function()
-          if luasnip.expand_or_locally_jumpable() then
-            luasnip.expand_or_jump()
-          end
+          if luasnip.expand_or_locally_jumpable() then luasnip.expand_or_jump() end
         end, { 'i', 's' }),
         ['<C-h>'] = cmp.mapping(function()
-          if luasnip.locally_jumpable(-1) then
-            luasnip.jump(-1)
-          end
+          if luasnip.locally_jumpable(-1) then luasnip.jump(-1) end
         end, { 'i', 's' }),
       },
       sources = {
+        { name = 'lazydev', group_index = 0 }, -- require("...") module-path completion
         { name = 'nvim_lsp' },
         { name = 'luasnip' },
         { name = 'path' },

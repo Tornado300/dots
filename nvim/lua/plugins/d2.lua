@@ -12,9 +12,7 @@ return {
     vim.api.nvim_create_autocmd('FileType', {
       pattern = 'd2',
       callback = function(ev)
-        local function map(lhs, rhs, desc)
-          vim.keymap.set('i', lhs, rhs, { buffer = ev.buf, desc = desc })
-        end
+        local function map(lhs, rhs, desc) vim.keymap.set('i', lhs, rhs, { buffer = ev.buf, desc = desc }) end
         map(',a', '-> ', 'D2: insert ->')
         map(',d', '<-> ', 'D2: insert <->')
         map(',b', '<- ', 'D2: insert <-')

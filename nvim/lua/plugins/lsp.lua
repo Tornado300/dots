@@ -9,7 +9,26 @@ return {
     'williamboman/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
     { 'j-hui/fidget.nvim', opts = {} },
-    { 'folke/neodev.nvim', opts = {} },
+    -- lua_ls doesn't know about the `vim` global or its API by default --
+    -- lazydev points it at Neovim's own runtime Lua (and installed plugins'
+    -- types) whenever editing this config, so `vim.xyz` gets real
+    -- hover/completion/diagnostics instead of "undefined global" warnings.
+    -- (neodev.nvim, the older plugin for this, is archived/deprecated in
+    -- favor of lazydev and only hooks into lspconfig's old setup() wrapper,
+    -- which this file doesn't use -- vim.lsp.config()/enable() bypasses it
+    -- entirely, so neodev was silently doing nothing here.)
+    {
+      'folke/lazydev.nvim',
+      ft = 'lua',
+      opts = {
+        library = {
+          -- Loads automatically for files under stdpath('config') and any
+          -- plugin directory already; this extra entry adds libuv types
+          -- (vim.uv) which aren't bundled with the runtime annotations.
+          { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+        },
+      },
+    },
   },
   config = function()
     require('mason').setup()
@@ -23,7 +42,6 @@ return {
         'prettier',
         'typos-lsp',
         'lua-language-server',
-        -- 'pyright',
         'pyrefly',
         'ruff',
         'qmlls',
@@ -40,13 +58,9 @@ return {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
       callback = function(event)
         local client = vim.lsp.get_client_by_id(event.data.client_id)
-        if not client then
-          return
-        end
+        if not client then return end
 
-        if client.server_capabilities.inlayHintProvider then
-          vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
-        end
+        if client.server_capabilities.inlayHintProvider then vim.lsp.inlay_hint.enable(true, { bufnr = event.buf }) end
 
         if client.server_capabilities.documentHighlightProvider then
           local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
@@ -113,9 +127,7 @@ return {
         -- vim-mcfunction already provides syntax highlighting for .mcfunction,
         -- so drop LSP semantic tokens there to avoid clashing. .mcdoc has no
         -- separate syntax plugin, so it relies on semantic tokens and keeps them.
-        if vim.bo[bufnr].filetype == 'mcfunction' then
-          vim.lsp.semantic_tokens.stop(bufnr, client.id)
-        end
+        if vim.bo[bufnr].filetype == 'mcfunction' then vim.lsp.semantic_tokens.stop(bufnr, client.id) end
       end,
     })
 

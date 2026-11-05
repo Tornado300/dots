@@ -2,14 +2,14 @@
 -- top of the window while you scroll past it.
 -- https://github.com/nvim-treesitter/nvim-treesitter-context
 return {
-  "nvim-treesitter/nvim-treesitter-context",
+  'nvim-treesitter/nvim-treesitter-context',
   config = function()
-    require("treesitter-context").setup({
+    require('treesitter-context').setup {
       enable = true,
-      max_lines = 5,       -- how many lines of context to show
+      max_lines = 5, -- how many lines of context to show
       line_numbers = false,
-      trim_scope = "outer", -- shows outer scope if needed
-      mode = "topline",      -- context updates based on cursor
-    })
-  end
+      trim_scope = 'outer', -- shows outer scope if needed
+      mode = 'topline', -- context updates based on cursor
+    }
+  end,
 }

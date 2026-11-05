@@ -42,9 +42,7 @@ return {
       enabled = true,
       animate = { duration = { step = 8, total = 120 }, easing = 'linear' },
       animate_repeat = { delay = 100, duration = { step = 4, total = 30 }, easing = 'linear' },
-      filter = function(buf)
-        return vim.b[buf].snacks_scroll == true
-      end,
+      filter = function(buf) return vim.b[buf].snacks_scroll == true end,
     },
     picker = {
       enabled = true,
@@ -67,12 +65,8 @@ return {
       pattern = 'VeryLazy',
       callback = function()
         -- Setup some globals for debugging (lazy-loaded)
-        _G.dd = function(...)
-          Snacks.debug.inspect(...)
-        end
-        _G.bt = function()
-          Snacks.debug.backtrace()
-        end
+        _G.dd = function(...) Snacks.debug.inspect(...) end
+        _G.bt = function() Snacks.debug.backtrace() end
         vim.print = _G.dd -- Override print to use snacks for `:=` command
       end,
     })

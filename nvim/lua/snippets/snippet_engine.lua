@@ -60,9 +60,7 @@ M.FUNCTION_LIKE_DEFAULT = FUNCTION_LIKE_DEFAULT
 
 local function find_target_node(bufnr, cursor_row, direction, node_types)
   local ok, parser = pcall(vim.treesitter.get_parser, bufnr)
-  if not ok or not parser then
-    return nil
-  end
+  if not ok or not parser then return nil end
   local type_set = {}
   for _, tname in ipairs(node_types) do
     type_set[tname] = true
@@ -74,13 +72,9 @@ local function find_target_node(bufnr, cursor_row, direction, node_types)
     if type_set[node:type()] then
       local srow = node:start()
       if direction == 'above' then
-        if srow <= cursor_row and (not best or srow > best:start()) then
-          best = node
-        end
+        if srow <= cursor_row and (not best or srow > best:start()) then best = node end
       else -- below
-        if srow >= cursor_row and (not best or srow < best:start()) then
-          best = node
-        end
+        if srow >= cursor_row and (not best or srow < best:start()) then best = node end
       end
     end
     for child in node:iter_children() do
@@ -93,13 +87,9 @@ end
 
 local function extract_treesitter(bufnr, cursor_row, cfg)
   local target = find_target_node(bufnr, cursor_row, cfg.direction, cfg.node_types)
-  if not target then
-    return {}
-  end
+  if not target then return {} end
   local field_node = cfg.field and target:field(cfg.field)[1]
-  if not field_node then
-    return {}
-  end
+  if not field_node then return {} end
 
   local items = {}
   for child in field_node:iter_children() do
@@ -139,9 +129,7 @@ local function extract_regex(bufnr, cursor_row, cfg)
         item['cap' .. (gi - 1)] = caps[gi] ~= '' and caps[gi] or nil
       end
       table.insert(items, item)
-      if not cfg.multi then
-        break
-      end
+      if not cfg.multi then break end
     end
   end
   return items
@@ -151,14 +139,10 @@ end
 --- ${1:default} tab stop --------------------------------------------------
 
 local function render_template(template, item)
-  local text = template:gsub('{{(%w+)}}', function(key)
-    return item[key] or ''
-  end)
+  local text = template:gsub('{{(%w+)}}', function(key) return item[key] or '' end)
 
   local prefix, default, suffix = text:match '^(.-)%${1:([^}]*)}(.*)$'
-  if prefix then
-    return prefix, default, suffix
-  end
+  if prefix then return prefix, default, suffix end
   -- no tab stop in this template: it's all literal text, no insert node needed
   return text, nil, nil
 end
@@ -202,9 +186,7 @@ local function build_snippet_nodes(cfg)
         if default ~= nil then
           stop = stop + 1
           table.insert(nodes, i(stop, default))
-          if suffix and suffix ~= '' then
-            table.insert(nodes, t(suffix))
-          end
+          if suffix and suffix ~= '' then table.insert(nodes, t(suffix)) end
         end
       end
     end
@@ -249,9 +231,7 @@ function M.load_ft(ft)
       vim.notify(('Smart snippet "%s" (%s) failed to build: %s'):format(name, ft, snip), vim.log.levels.WARN)
     end
   end
-  if #snippets > 0 then
-    ls.add_snippets(ft, snippets)
-  end
+  if #snippets > 0 then ls.add_snippets(ft, snippets) end
 end
 
 function M.load_all()

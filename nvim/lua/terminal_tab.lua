@@ -16,13 +16,23 @@ local last_code_tab = nil
 --- keybinds.lua) can send commands into its shell.
 ---@return snacks.win
 function M.ensure()
+  local new_tab = false
   if terminal_tab and vim.api.nvim_tabpage_is_valid(terminal_tab) then
     vim.api.nvim_set_current_tabpage(terminal_tab)
   else
     vim.cmd 'tabnew'
     terminal_tab = vim.api.nvim_get_current_tabpage()
+    new_tab = true
   end
-  if not (terminal_win and terminal_win:buf_valid()) then
+  if terminal_win and terminal_win:buf_valid() then
+    -- Closing the terminal tab/window closes the window, not the buffer --
+    -- the shell job keeps running hidden in the background. Reattach it to
+    -- this fresh tab's window instead of leaving that window empty (and the
+    -- old terminal buffer orphaned).
+    if new_tab then
+      vim.api.nvim_win_set_buf(0, terminal_win.buf)
+    end
+  else
     -- start_insert/auto_insert off: by default snacks drops you into
     -- terminal-mode on open AND re-enters it every time you switch back into
     -- this buffer (its own permanent BufEnter autocmd) -- which breaks the
@@ -43,9 +53,7 @@ end
 function M.toggle()
   local current_tab = vim.api.nvim_get_current_tabpage()
   if terminal_tab and current_tab == terminal_tab then
-    if last_code_tab and vim.api.nvim_tabpage_is_valid(last_code_tab) then
-      vim.api.nvim_set_current_tabpage(last_code_tab)
-    end
+    if last_code_tab and vim.api.nvim_tabpage_is_valid(last_code_tab) then vim.api.nvim_set_current_tabpage(last_code_tab) end
     return
   end
   last_code_tab = current_tab

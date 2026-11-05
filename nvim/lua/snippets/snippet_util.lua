@@ -11,17 +11,11 @@ M.smart_dir = vim.fn.stdpath 'config' .. '/lua/snippets/smart'
 M.excluded_file = M.vscode_dir .. '/_excluded.json'
 
 function M.read_json(path, default)
-  if vim.fn.filereadable(path) == 0 then
-    return default
-  end
+  if vim.fn.filereadable(path) == 0 then return default end
   local ok, content = pcall(vim.fn.readfile, path)
-  if not ok or #content == 0 then
-    return default
-  end
+  if not ok or #content == 0 then return default end
   local decode_ok, decoded = pcall(vim.json.decode, table.concat(content, '\n'))
-  if not decode_ok then
-    return default
-  end
+  if not decode_ok then return default end
   return decoded
 end
 
@@ -33,9 +27,7 @@ end
 local function serialize_excluded(map)
   local fts = vim.tbl_keys(map)
   table.sort(fts)
-  if #fts == 0 then
-    return '{}\n'
-  end
+  if #fts == 0 then return '{}\n' end
   local parts = {}
   for _, ft in ipairs(fts) do
     local triggers = vim.deepcopy(map[ft])
@@ -52,20 +44,14 @@ end
 function M.add_excluded(ft, trigger)
   local excluded = M.read_json(M.excluded_file, {})
   excluded[ft] = excluded[ft] or {}
-  if not vim.tbl_contains(excluded[ft], trigger) then
-    table.insert(excluded[ft], trigger)
-  end
+  if not vim.tbl_contains(excluded[ft], trigger) then table.insert(excluded[ft], trigger) end
   M.write_file(M.vscode_dir, M.excluded_file, serialize_excluded(excluded))
 end
 
 function M.remove_excluded(ft, trigger)
   local excluded = M.read_json(M.excluded_file, {})
-  if not excluded[ft] then
-    return
-  end
-  excluded[ft] = vim.tbl_filter(function(t)
-    return t ~= trigger
-  end, excluded[ft])
+  if not excluded[ft] then return end
+  excluded[ft] = vim.tbl_filter(function(t) return t ~= trigger end, excluded[ft])
   M.write_file(M.vscode_dir, M.excluded_file, serialize_excluded(excluded))
 end
 
@@ -76,13 +62,9 @@ end
 -- from disk under our directories after a restart (loaders_store_source records the
 -- file each snippet came from).
 function M.is_ours(snip)
-  if snip.personal_override or snip.smart_snippet then
-    return true
-  end
+  if snip.personal_override or snip.smart_snippet then return true end
   local file = snip._source and snip._source.file
-  if not file then
-    return false
-  end
+  if not file then return false end
   return vim.startswith(file, M.vscode_dir) or vim.startswith(file, M.smart_dir)
 end
 
@@ -96,9 +78,7 @@ end
 -- invalidate everything EXCEPT ours (used to override a friendly-snippets original).
 function M.invalidate(ft, trigger, only_ours)
   local ok, luasnip = pcall(require, 'luasnip')
-  if not ok then
-    return
-  end
+  if not ok then return end
   for _, snip in ipairs(luasnip.get_snippets(ft) or {}) do
     local ours = M.is_ours(snip)
     local target = only_ours and ours or (not only_ours and not ours)
@@ -112,9 +92,7 @@ end
 -- Reactivate a previously-invalidated (non-personal) snippet for ft+trigger.
 function M.reactivate_original(ft, trigger)
   local ok, luasnip = pcall(require, 'luasnip')
-  if not ok then
-    return
-  end
+  if not ok then return end
   for _, snip in ipairs(luasnip.get_snippets(ft) or {}) do
     if snip.trigger == trigger and snip.invalidated and snip._saved_matches and not M.is_ours(snip) then
       snip.matches = snip._saved_matches
@@ -138,14 +116,10 @@ end
 -- Hook this to LuaSnip's "snippets were (re)loaded for this ft" event so it runs at
 -- the right time regardless of when/how that ft's snippets got loaded.
 function M.apply_exclusions(ft)
-  if not ft or ft == '' then
-    return
-  end
+  if not ft or ft == '' then return end
   local excluded = M.read_json(M.excluded_file, {})
   local triggers = excluded[ft]
-  if not triggers or #triggers == 0 then
-    return
-  end
+  if not triggers or #triggers == 0 then return end
   for _, trigger in ipairs(triggers) do
     M.invalidate(ft, trigger, false)
   end
@@ -153,17 +127,13 @@ end
 
 local hooked = false
 function M.ensure_exclusion_hook()
-  if hooked then
-    return
-  end
+  if hooked then return end
   hooked = true
   vim.api.nvim_create_autocmd('User', {
     pattern = 'LuasnipSnippetsAdded',
     callback = function()
       local ok, luasnip = pcall(require, 'luasnip')
-      if ok then
-        M.apply_exclusions(luasnip.session.latest_load_ft)
-      end
+      if ok then M.apply_exclusions(luasnip.session.latest_load_ft) end
     end,
   })
 end

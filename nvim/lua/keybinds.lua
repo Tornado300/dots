@@ -73,9 +73,7 @@ map('n', '<leader>xr', require('helpers.file_runner').run, { desc = '[X] Run cur
 -- Returned as noremap (default), so the fallthrough 'A' hits the built-in
 -- command rather than recursing into this same mapping.
 map('v', 'A', function()
-  if vim.fn.mode() == '\22' then
-    return 'A'
-  end
+  if vim.fn.mode() == '\22' then return 'A' end
   return '<Esc>gg0vG$'
 end, { expr = true, desc = 'Select whole file', silent = true })
 map({ 'n', 'v' }, 'P', '"0p', { desc = 'Paste from yank register', noremap = true, silent = true })

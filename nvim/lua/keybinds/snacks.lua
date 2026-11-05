@@ -1,18 +1,14 @@
-function wrap(callable, args)
+local function wrap(callable, args)
   local func
   if type(args) == 'nil' then
-    func = function()
-      callable()
-    end
+    func = function() callable() end
   else
-    func = function()
-      callable(args)
-    end
+    func = function() callable(args) end
   end
   return func
 end
 
-function map(modes, keybinds, callable, description, silent)
+local function map(modes, keybinds, callable, description, silent)
   silent = silent or false
   local func
   if type(callable) == 'function' then
@@ -58,12 +54,8 @@ toggle.option('relativenumber', { name = 'Toggle relative line Numbers' }):map '
 toggle
   .new({
     name = 'Toggle Autoformat',
-    get = function()
-      return not vim.g.disable_autoformat
-    end,
-    set = function(state)
-      vim.g.disable_autoformat = not state
-    end,
+    get = function() return not vim.g.disable_autoformat end,
+    set = function(state) vim.g.disable_autoformat = not state end,
   })
   :map '<leader>tf'
 

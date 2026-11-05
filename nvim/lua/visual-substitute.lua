@@ -28,9 +28,7 @@ end, { expr = true })
 local function delim_positions(str, ch)
   local pos = {}
   for i = 1, #str do
-    if str:sub(i, i) == ch and str:sub(i - 1, i - 1) ~= '\\' then
-      pos[#pos + 1] = i
-    end
+    if str:sub(i, i) == ch and str:sub(i - 1, i - 1) ~= '\\' then pos[#pos + 1] = i end
   end
   return pos
 end
@@ -39,23 +37,17 @@ vim.api.nvim_create_autocmd('CmdlineLeave', {
   pattern = ':',
   callback = function()
     want_v = false
-    if vim.v.event.abort then
-      return
-    end
+    if vim.v.event.abort then return end
     local line = vim.fn.getcmdline()
     local delim = line:match 's(%p)'
-    if not delim then
-      return
-    end
+    if not delim then return end
     local pos = delim_positions(line, delim)
     if #pos == 2 then
       -- pattern/replacement typed, no closing delimiter (so no flags yet)
       vim.fn.setcmdline(line .. delim .. 'g')
     elseif #pos >= 3 then
       local flags = line:sub(pos[3] + 1)
-      if not flags:find('g', 1, true) then
-        vim.fn.setcmdline(line .. 'g')
-      end
+      if not flags:find('g', 1, true) then vim.fn.setcmdline(line .. 'g') end
     end
   end,
 })
